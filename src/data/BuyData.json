@@ -1,0 +1,332 @@
+[
+  {
+    "id": 1,
+    "title": "Luxury Apartment in Downtown Dubai",
+    "location": "Downtown Dubai",
+    "propertyType": "Apartment",
+    "bedrooms": 2,
+    "area": "1,450 sqft",
+    "price": "AED 2,300,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Swimming Pool",
+      "Gymnasium",
+      "24/7 Security",
+      "Basement Parking",
+      "Balcony with Burj Khalifa View"
+    ],
+    "description": "Experience luxury living in the heart of Dubai with this stunning 2-bedroom apartment. Situated in Downtown, this home offers spectacular views of the Burj Khalifa and easy access to the Dubai Mall.\n\nThe property features high-end finishes, a fully-equipped kitchen, and modern design throughout. Ideal for professionals or small families seeking a stylish urban lifestyle."
+  },
+  {
+    "id": 2,
+    "title": "Modern Villa in Palm Jumeirah",
+    "location": "Palm Jumeirah",
+    "propertyType": "Villa",
+    "bedrooms": 5,
+    "area": "3,500 sqft",
+    "price": "AED 18,000,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Private Beach Access",
+      "Infinity Pool",
+      "Smart Home System",
+      "Maid’s Room",
+      "Private Garden"
+    ],
+    "description": "This magnificent 5-bedroom villa on Palm Jumeirah offers beachfront luxury and unmatched elegance. The property boasts a spacious open-plan layout with floor-to-ceiling windows that flood the rooms with natural light.\n\nRelax in your private garden, enjoy direct beach access, or entertain in the stunning infinity pool. A truly elite lifestyle awaits."
+  },
+  {
+    "id": 3,
+    "title": "Contemporary Townhouse in Jumeirah Village Circle",
+    "location": "JVC, Dubai",
+    "propertyType": "Townhouse",
+    "bedrooms": 3,
+    "area": "2,800 sqft",
+    "price": "AED 1,750,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Community Park",
+      "Children’s Play Area",
+      "Open Kitchen",
+      "Garage Parking",
+      "Pet-Friendly"
+    ],
+    "description": "A beautifully crafted 3-bedroom townhouse in the family-friendly community of JVC. This home offers bright living spaces, contemporary interiors, and a private backyard.\n\nIdeal for families seeking a balanced lifestyle with close proximity to schools, parks, and shopping centers."
+  },
+  {
+    "id": 4,
+    "title": "Elegant Penthouse in Dubai Marina",
+    "location": "Dubai Marina",
+    "propertyType": "Penthouse",
+    "bedrooms": 4,
+    "area": "4,200 sqft",
+    "price": "AED 9,500,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Full Marina View",
+      "Private Elevator",
+      "Jacuzzi & Sauna",
+      "Concierge Service",
+      "High-End Furnishing"
+    ],
+    "description": "This ultra-modern 4-bedroom penthouse offers a panoramic view of Dubai Marina with unmatched privacy and elegance. Featuring private elevator access and a full-length terrace, this home is designed for those who demand the finest.\n\nWhether you’re relaxing in the rooftop jacuzzi or hosting guests in the expansive living room, this penthouse delivers an unforgettable experience."
+  },
+  {
+    "id": 5,
+    "title": "Spacious Family Villa in Arabian Ranches",
+    "location": "Arabian Ranches",
+    "propertyType": "Villa",
+    "bedrooms": 4,
+    "area": "4,000 sqft",
+    "price": "AED 3,800,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Gated Community",
+      "Nearby Golf Course",
+      "Private Garden",
+      "Community Pool",
+      "BBQ Area"
+    ],
+    "description": "Located in the serene Arabian Ranches, this spacious 4-bedroom villa is perfect for growing families. The home offers a landscaped garden, multiple family spaces, and access to top-notch amenities.\n\nEnjoy peaceful community living with proximity to parks, schools, and retail centers while still being minutes away from central Dubai."
+  },
+  {
+    "id": 6,
+    "title": "Stylish Apartment in Business Bay",
+    "location": "Business Bay, Dubai",
+    "propertyType": "Apartment",
+    "bedrooms": 1,
+    "area": "980 sqft",
+    "price": "AED 1,200,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Canal View",
+      "Covered Parking",
+      "Rooftop Pool",
+      "Fully Equipped Gym",
+      "High-Speed Elevators"
+    ],
+    "description": "This 1-bedroom apartment is located in the vibrant Business Bay district. With elegant interiors and scenic canal views, it offers urban living at its best.\n\nEnjoy nearby cafes, walkable boulevards, and quick access to Downtown Dubai and DIFC."
+  },
+  {
+    "id": 7,
+    "title": "Premium Villa in Emirates Hills",
+    "location": "Emirates Hills, Dubai",
+    "propertyType": "Villa",
+    "bedrooms": 6,
+    "area": "1500 sqft",
+    "price": "AED 38,000,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Golf Course View",
+      "Infinity Pool",
+      "Private Cinema",
+      "Underground Parking",
+      "Maid and Driver’s Rooms"
+    ],
+    "description": "An extraordinary 6-bedroom villa in the ultra-luxurious Emirates Hills. Boasting bespoke finishes, private entertainment areas, and breathtaking views of the golf course.\n\nA true mansion for elite buyers looking for class and exclusivity."
+  },
+  {
+    "id": 8,
+    "title": "Affordable Townhouse in DAMAC Hills 2",
+    "location": "DAMAC Hills 2, Dubai",
+    "propertyType": "Townhouse",
+    "bedrooms": 3,
+    "area": "1,900 sqft",
+    "price": "AED 1,100,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Community Pool",
+      "Outdoor Gym",
+      "Green Parks",
+      "Retail Center Nearby",
+      "Kids Play Zone"
+    ],
+    "description": "Ideal for first-time buyers or investors, this cozy 3-bedroom townhouse is located in DAMAC Hills 2, a fast-growing family-oriented community.\n\nWith contemporary finishes and access to resort-style amenities, this property offers great value for money."
+  },
+  {
+    "id": 9,
+    "title": "Furnished Apartment in Dubai Creek Harbour",
+    "location": "Dubai Creek Harbour",
+    "propertyType": "Apartment",
+    "bedrooms": 2,
+    "area": "1,220 sqft",
+    "price": "AED 2,100,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Creek View",
+      "Furnished",
+      "Jogging Track",
+      "BBQ Area",
+      "Smart Security System"
+    ],
+    "description": "Enjoy a luxurious lifestyle in this fully furnished 2-bedroom apartment in Dubai Creek Harbour. With panoramic views and access to serene boardwalks, it blends tranquility and modernity.\n\nPerfect for professionals or small families looking for a peaceful waterfront home."
+  },
+  {
+    "id": 10,
+    "title": "Modern Penthouse in Jumeirah Beach Residence",
+    "location": "JBR, Dubai",
+    "propertyType": "Penthouse",
+    "bedrooms": 4,
+    "area": "2,800 sqft",
+    "price": "AED 11,200,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Sea View",
+      "Direct Beach Access",
+      "Private Terrace",
+      "Concierge Service",
+      "Modern Interiors"
+    ],
+    "description": "Live the beachfront dream in this ultra-luxury penthouse in JBR. Designed with elegance, it offers unparalleled sea views and direct access to Dubai’s pristine beaches.\n\nThe spacious open-plan layout and full-length terrace make it ideal for entertaining."
+  },
+  {
+    "id": 11,
+    "title": "Elegant Apartment in Al Barari",
+    "location": "Al Barari, Dubai",
+    "propertyType": "Apartment",
+    "bedrooms": 3,
+    "area": "2,300 sqft",
+    "price": "AED 3,300,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Eco-Friendly Community",
+      "Organic Gardens",
+      "Spa & Wellness Center",
+      "Private Balconies",
+      "Nature Views"
+    ],
+    "description": "This 3-bedroom apartment is a hidden gem located in the lush green community of Al Barari. Known for its sustainable design and nature-inspired living.\n\nIt’s an oasis of calm, just minutes away from the city's hustle and bustle."
+  },
+  {
+    "id": 12,
+    "title": "Family Villa in The Springs",
+    "location": "The Springs, Dubai",
+    "propertyType": "Villa",
+    "bedrooms": 3,
+    "area": "2,750 sqft",
+    "price": "AED 2,500,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Lake View",
+      "Private Garden",
+      "Community Pools",
+      "Security Patrol",
+      "Nearby Schools"
+    ],
+    "description": "A spacious and charming 3-bedroom villa located in The Springs, one of Dubai’s most loved gated communities.\n\nPerfect for families, this property offers a balance of convenience, safety, and comfort with nature trails and green spaces all around."
+  },
+  {
+    "id": 13,
+    "title": "Smart Townhouse in Mudon",
+    "location": "Mudon, Dubai",
+    "propertyType": "Townhouse",
+    "bedrooms": 4,
+    "area": "2,100 sqft",
+    "price": "AED 2,200,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Smart Home System",
+      "Private Garage",
+      "Running Track",
+      "Family Lounge",
+      "Solar Water Heater"
+    ],
+    "description": "This 4-bedroom townhouse in Mudon is ideal for tech-savvy families who appreciate comfort and energy efficiency.\n\nLocated in a peaceful suburban setting, it’s close to schools, playgrounds, and local shopping areas."
+  },
+  {
+    "id": 14,
+    "title": "Downtown Penthouse with Burj View",
+    "location": "Downtown Dubai",
+    "propertyType": "Penthouse",
+    "bedrooms": 5,
+    "area": "3,100 sqft",
+    "price": "AED 16,500,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Burj Khalifa View",
+      "Sky Terrace",
+      "Formal Dining Room",
+      "Private Elevator",
+      "Designer Kitchen"
+    ],
+    "description": "Set atop a luxury tower in Downtown, this breathtaking 5-bedroom penthouse provides expansive views of Burj Khalifa and Dubai Fountain.\n\nFeaturing a sky terrace and private elevator, it's designed for those who seek the extraordinary."
+  },
+  {
+    "id": 15,
+    "title": "Affordable Studio Apartment in Arjan",
+    "location": "Arjan, Dubai",
+    "propertyType": "Apartment",
+    "bedrooms": 0,
+    "area": "550 sqft",
+    "price": "AED 560,000",
+    "images": [
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp",
+      "https://fnst.axflare.com/property/WEBP/NlQzbmNJtl.webp"
+    ],
+    "featuresAndAmenities": [
+      "Affordable Pricing",
+      "Shared Pool",
+      "Balcony",
+      "Close to Miracle Garden",
+      "Basement Parking"
+    ],
+    "description": "A compact yet stylish studio apartment ideal for investors or bachelors. Located in Arjan, this unit provides easy access to schools, attractions, and main highways.\n\nA smart choice for long-term investment or rental income."
+  }
+]

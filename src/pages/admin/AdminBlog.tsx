@@ -1,0 +1,187 @@
+import { Edit, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import AddBlog from "../../components/AddBlogs";
+import { useNavigate } from "react-router-dom";
+
+interface BlogPost {
+  _id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  datePublished: string;
+  slug: string;
+  coverImage: string;
+  tags?: string;
+}
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL + "/api/blogs";
+
+const AdminBlog = () => {
+  const navigate = useNavigate();
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingBlog, setEditingBlog] = useState<BlogPost | null>(null);
+
+  const fetchBlogs = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/viewblog`);
+      const json = await res.json();
+
+      const blogsArray: BlogPost[] = Array.isArray(json)
+        ? json
+        : (json.data ?? json.blogs ?? []);
+
+      const sortedBlogs = blogsArray.sort((a, b) => {
+        const dateA = new Date(a.datePublished).getTime();
+        const dateB = new Date(b.datePublished).getTime();
+        return dateB - dateA;
+      });
+
+      setBlogs(sortedBlogs);
+    } catch (error) {
+      console.error("Failed to fetch blogs", error);
+      setBlogs([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+
+  const handleDelete = async (slug: string) => {
+    if (!window.confirm("Are you sure you want to delete this blog post?"))
+      return;
+
+    try {
+      const res = await fetch(`${API_BASE}/${slug}`, { method: "DELETE" });
+      const json = await res.json();
+      if (res.ok) {
+        alert(json.msg || "Deleted successfully");
+        fetchBlogs();
+      } else {
+        alert(json.msg || "Failed to delete");
+      }
+    } catch {
+      alert("Error deleting blog post");
+    }
+  };
+
+  const handleEdit = (slug: string) => {
+    const blogToEdit = blogs.find((b) => b.slug === slug);
+    if (blogToEdit) {
+      setEditingBlog(blogToEdit);
+      setShowAddModal(true);
+    }
+  };
+
+  const handleModalClose = () => {
+    setShowAddModal(false);
+    setEditingBlog(null);
+  };
+
+  return (
+    <div className="h-screen bg-black text-white font-raleway flex flex-col p-4">
+      <div className="flex justify-between items-center sticky top-0 z-20 bg-black p-4 border-b border-gray-700">
+        <h1 className="text-2xl sm:text-3xl font-bold">Blog Posts</h1>
+        <button
+          className="text-white bg-[var(--primary-color)] px-4 py-2 rounded"
+          onClick={() => navigate("/admin/add")}
+        >
+          Add New Blog
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto mt-4">
+        {loading ? (
+          <p>Loading...</p>
+        ) : blogs.length === 0 ? (
+          <p className="text-gray-400">No blog posts found.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full table-fixed border-collapse border border-gray-700 text-sm sm:text-base">
+              <thead className="bg-[#1e1e1e] text-left">
+                <tr>
+                  <th className="px-2 py-2 border-b border-gray-700 w-36 truncate">
+                    Image
+                  </th>
+                  <th className="px-2 py-2 border-b border-gray-700 w-40 truncate">
+                    Title
+                  </th>
+                  <th className="px-2 py-2 border-b border-gray-700 w-48 truncate">
+                    Description
+                  </th>
+                  <th className="px-2 py-2 border-b border-gray-700 w-24 truncate">
+                    Author
+                  </th>
+                  <th className="px-2 py-2 border-b border-gray-700 w-28 truncate">
+                    Published
+                  </th>
+                  <th className="px-2 py-2 border-b border-gray-700 w-24 truncate">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {blogs.map((blog) => (
+                  <tr
+                    key={blog._id}
+                    className="even:bg-[#111] hover:bg-[#222] transition duration-200"
+                  >
+                    <td className="px-2 py-2 truncate whitespace-nowrap">
+                      <img
+                        src={blog.coverImage}
+                        alt="blog cover image"
+                        width={100}
+                      />
+                    </td>
+                    <td className="px-2 py-2 truncate whitespace-nowrap">
+                      {blog.title}
+                    </td>
+                    <td className="px-2 py-2 truncate whitespace-nowrap">
+                      {blog.excerpt}
+                    </td>
+                    <td className="px-2 py-2 truncate whitespace-nowrap">
+                      {blog.author}
+                    </td>
+                    <td className="px-2 py-2 truncate whitespace-nowrap">
+                      {new Date(blog.datePublished).toLocaleDateString()}
+                    </td>
+                    <td className="px-2 py-2 space-x-4">
+                      <button
+                        onClick={() => handleEdit(blog.slug)}
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        <Edit size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(blog.slug)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {showAddModal && (
+        <AddBlog
+          onClose={handleModalClose}
+          onSuccess={fetchBlogs}
+          existingBlog={editingBlog}
+        />
+      )}
+    </div>
+  );
+};
+
+export default AdminBlog;

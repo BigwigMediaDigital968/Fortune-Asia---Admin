@@ -1,0 +1,92 @@
+[
+  {
+    "image": "https://fnst.axflare.com/community/JPEG/CcuibKvwuc.jpeg",
+    "title": "Downtown Dubai",
+    "description": "Downtown Dubai is the heart of the city, known for its iconic landmarks including the Burj Khalifa and The Dubai Mall. It offers luxurious lifestyle options, high-end residences, and world-class entertainment.",
+    "features": [
+      "Iconic Burj Khalifa views",
+      "Luxury apartments and penthouses",
+      "Close proximity to business hubs",
+      "Vibrant nightlife and restaurants"
+    ],
+    "amenities": [
+      "24/7 Security",
+      "Swimming Pools",
+      "Fitness Centers",
+      "Retail Outlets",
+      "Parks and Open Spaces"
+    ]
+  },
+  {
+    "image": "https://fnst.axflare.com/community/JPEG/ytuhitYJsL.jpeg",
+    "title": "Jumeirah Village Circle (JVC)",
+    "description": "JVC offers a family-friendly environment with affordable housing options. The area includes a mix of villas, townhouses, and apartments surrounded by landscaped gardens.",
+    "features": [
+      "Affordable living",
+      "Family-oriented community",
+      "Variety of property types",
+      "Peaceful surroundings"
+    ],
+    "amenities": [
+      "Schools and Nurseries",
+      "Community Parks",
+      "Supermarkets",
+      "Fitness Centers",
+      "Walking and Cycling Tracks"
+    ]
+  },
+  {
+    "image": "https://fnst.axflare.com/community/JPEG/eHYkCaDgIJ.jpeg",
+    "title": "Dubai Marina",
+    "description": "Dubai Marina is a modern, waterfront community offering high-rise apartments and a lively lifestyle with restaurants, retail, and entertainment options by the sea.",
+    "features": [
+      "Waterfront living",
+      "Skyscraper apartments",
+      "Vibrant community",
+      "Excellent connectivity"
+    ],
+    "amenities": [
+      "Marina Walk",
+      "Beaches",
+      "Restaurants & Cafes",
+      "Metro and Tram Access",
+      "Yacht Clubs"
+    ]
+  },
+  {
+    "image": "https://fnst.axflare.com/community/JPEG/ytuhitYJsL.jpeg",
+    "title": "Jumeirah Village Circle (JVC)",
+    "description": "JVC offers a family-friendly environment with affordable housing options. The area includes a mix of villas, townhouses, and apartments surrounded by landscaped gardens.",
+    "features": [
+      "Affordable living",
+      "Family-oriented community",
+      "Variety of property types",
+      "Peaceful surroundings"
+    ],
+    "amenities": [
+      "Schools and Nurseries",
+      "Community Parks",
+      "Supermarkets",
+      "Fitness Centers",
+      "Walking and Cycling Tracks"
+    ]
+  },
+  {
+    "image": "https://fnst.axflare.com/community/JPEG/eHYkCaDgIJ.jpeg",
+    "title": "Dubai Marina",
+    "description": "Dubai Marina is a modern, waterfront community offering high-rise apartments and a lively lifestyle with restaurants, retail, and entertainment options by the sea.",
+    "features": [
+      "Waterfront living",
+      "Skyscraper apartments",
+      "Vibrant community",
+      "Excellent connectivity"
+    ],
+    "amenities": [
+      "Marina Walk",
+      "Beaches",
+      "Restaurants & Cafes",
+      "Metro and Tram Access",
+      "Yacht Clubs"
+    ]
+  }
+]

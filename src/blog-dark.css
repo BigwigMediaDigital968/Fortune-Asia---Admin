@@ -1,0 +1,74 @@
+/*
+ * blog-dark.css
+ *
+ * Overrides hardcoded inline styles injected by Jodit (and other rich-text
+ * editors) so blog content respects light / dark mode.
+ *
+ * Import this file once in your app entry point, e.g.:
+ *   import "./styles/blog-dark.css";
+ */
+
+/* ── Force all inline-styled elements inside .jodit-content to inherit
+   the surrounding prose color in dark mode.  We use !important only
+   here because we're explicitly fighting editor-injected inline styles. ── */
+
+.dark .jodit-content *,
+.dark .jodit-content p,
+.dark .jodit-content span,
+.dark .jodit-content li,
+.dark .jodit-content td,
+.dark .jodit-content th,
+.dark .jodit-content blockquote,
+.dark .jodit-content h1,
+.dark .jodit-content h2,
+.dark .jodit-content h3,
+.dark .jodit-content h4,
+.dark .jodit-content h5,
+.dark .jodit-content h6 {
+  color: inherit !important;
+  background-color: transparent !important;
+}
+
+/* Keep images and decorative elements unaffected */
+.dark .jodit-content img,
+.dark .jodit-content svg,
+.dark .jodit-content video,
+.dark .jodit-content iframe {
+  background-color: transparent !important;
+}
+
+/* Inline code / pre blocks — give them a dark surface */
+.dark .jodit-content code {
+  color: #e2e8f0 !important;
+  background-color: #1e293b !important;
+}
+
+.dark .jodit-content pre {
+  background-color: #0f172a !important;
+  color: #e2e8f0 !important;
+}
+
+/* Tables */
+.dark .jodit-content table {
+  border-color: #374151 !important;
+}
+
+.dark .jodit-content th,
+.dark .jodit-content td {
+  border-color: #374151 !important;
+  background-color: transparent !important;
+}
+
+.dark .jodit-content tr:nth-child(even) td {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Horizontal rules */
+.dark .jodit-content hr {
+  border-color: #374151 !important;
+}
+
+/* Links keep their brand color */
+.dark .jodit-content a {
+  color: var(--primary-color) !important;
+}

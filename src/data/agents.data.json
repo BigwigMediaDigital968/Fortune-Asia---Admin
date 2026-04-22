@@ -1,0 +1,218 @@
+[
+  {
+    "id": "ben-thomas",
+    "name": "Ben Thomas",
+    "position": "Head of Secondary",
+    "experience": "10 years",
+    "languages": "English, Spanish",
+    "specialization": "Leadership",
+    "language": "English",
+    "img": "https://fnst.axflare.com/img/team/JPEG/oEsyFzyLSm.jpg",
+    "call": "+971501234567",
+    "email": "ben.thomas@example.com",
+    "whatsapp": "+971501234567",
+    "description": {
+      "summary": "Ben has been leading high-performing sales teams across secondary markets...",
+      "personal": "Passionate about real estate, he enjoys hiking and coaching.",
+      "motto": "Leadership is about action, not position."
+    }
+  },
+  {
+    "id": "dmitriy-zolotco",
+    "name": "Dmitriy Zolotco",
+    "position": "Associate Director",
+    "experience": "15 years",
+    "languages": "English, Russian, Romanian",
+    "specialization": "Leadership",
+    "language": "English",
+    "img": "https://fnst.axflare.com/img/team/JPEG/XqjPzqAxew.jpeg",
+    "call": "+971501234568",
+    "email": "dmitriy.zolotco@example.com",
+    "whatsapp": "+971501234568",
+    "description": {
+      "summary": "Dmitriy brings deep leadership expertise to our organization.",
+      "personal": "Enjoys chess and community development.",
+      "motto": "Lead with vision, execute with passion."
+    }
+  },
+  {
+    "id": "maksim-tuguchev",
+    "name": "Maksim Tuguchev",
+    "position": "Associate Director",
+    "experience": "15 years",
+    "languages": "English, Russian",
+    "specialization": "Leadership",
+    "language": "English",
+    "img": "https://fnst.axflare.com/img/team/JPEG/NQdQHfPaqp.jpg",
+    "call": "+971501234569",
+    "email": "maksim.tuguchev@example.com",
+    "whatsapp": "+971501234569",
+    "description": {
+      "summary": "Maksim has vast experience in luxury real estate leadership.",
+      "personal": "Avid reader and travel enthusiast.",
+      "motto": "Precision and discipline build excellence."
+    }
+  },
+  {
+    "id": "shehryar-malik",
+    "name": "Shehryar Malik",
+    "position": "Senior Sales Manager",
+    "experience": "10 years",
+    "languages": "English, Urdu, Punjabi",
+    "specialization": "Sales",
+    "language": "English",
+    "img": "https://fnst.axflare.com/img/team/JPEG/LXmYKEgJrB.jpg",
+    "call": "+971501234570",
+    "email": "shehryar.malik@example.com",
+    "whatsapp": "+971501234570",
+    "description": {
+      "summary": "Shehryar specializes in residential and investment properties.",
+      "personal": "Cricket lover and community mentor.",
+      "motto": "Build trust, deliver results."
+    }
+  },
+  {
+    "id": "olga-gojin",
+    "name": "Olga Gojin",
+    "position": "Property Expert",
+    "experience": "15 years",
+    "languages": "English, Russian, Romanian",
+    "specialization": "Consulting",
+    "language": "English",
+    "img": "https://fnst.axflare.com/img/team/JPEG/hnhevodlOC.jpg",
+    "call": "+971501234571",
+    "email": "olga.gojin@example.com",
+    "whatsapp": "+971501234571",
+    "description": {
+      "summary": "Olga has helped hundreds of clients find their dream homes.",
+      "personal": "She enjoys yoga and self-development literature.",
+      "motto": "Believe in yourself, stay positive and smile."
+    }
+  },
+  {
+    "id": "luiza-ribas-patane",
+    "name": "Luiza Ribas Patane",
+    "position": "Senior Property Expert",
+    "experience": "4 years",
+    "languages": "English, Spanish, Portuguese",
+    "specialization": "Consulting",
+    "language": "English",
+    "img": "https://fnst.axflare.com/img/team/JPEG/jiUdROrzFq.jpg",
+    "call": "+971501234572",
+    "email": "luiza.patane@example.com",
+    "whatsapp": "+971501234572",
+    "description": {
+      "summary": "Luiza has strong connections across the Portuguese-speaking market.",
+      "personal": "Loves music and beach walks.",
+      "motto": "Clients first, always."
+    }
+  },
+  {
+    "id": "azim-choudry",
+    "name": "Azim Choudry",
+    "position": "Sales Manager",
+    "experience": "2 years",
+    "languages": "English, Hindi, Urdu, Punjabi",
+    "specialization": "Sales",
+    "language": "English",
+    "img": "https://fnst.axflare.com/img/team/JPEG/TSIafQLskj.jpeg",
+    "call": "+971501234573",
+    "email": "azim.choudry@example.com",
+    "whatsapp": "+971501234573",
+    "description": {
+      "summary": "Azim is driven by results and client relationships.",
+      "personal": "Enjoys photography and football.",
+      "motto": "Make it happen."
+    }
+  },
+  {
+    "id": "aram-grigorian",
+    "name": "Aram Grigorian",
+    "position": "Senior Property Expert",
+    "experience": "11 years",
+    "languages": "English, Russian, Armenian, German",
+    "specialization": "Consulting",
+    "language": "English",
+    "img": "https://fnst.axflare.com/img/team/JPEG/LzBZjLCTFO.jpg",
+    "call": "+971501234574",
+    "email": "aram.grigorian@example.com",
+    "whatsapp": "+971501234574",
+    "description": {
+      "summary": "Aram handles complex multi-lingual client needs with ease.",
+      "personal": "Fan of European history and classical music.",
+      "motto": "Knowledge is power in real estate."
+    }
+  },
+  {
+    "id": "anastasia-jakovleva",
+    "name": "Anastasia Jakovleva",
+    "position": "Senior Property Consultant",
+    "experience": "3 years",
+    "languages": "English, Russian, Lithuanian",
+    "specialization": "Consulting",
+    "language": "English",
+    "img": "https://fnst.axflare.com/img/team/JPEG/WYTBkMLuDh.jpg",
+    "call": "+971501234575",
+    "email": "anastasia.jakovleva@example.com",
+    "whatsapp": "+971501234575",
+    "description": {
+      "summary": "Anastasia specializes in short-term rentals and investment portfolios.",
+      "personal": "Enjoys fine art and ballet.",
+      "motto": "Attention to detail wins deals."
+    }
+  },
+  {
+    "id": "armin-gharineiat",
+    "name": "Armin Gharineiat",
+    "position": "Senior Sales Manager",
+    "experience": "8 years",
+    "languages": "English, Persian",
+    "specialization": "Sales",
+    "language": "English",
+    "img": "https://fnst.axflare.com/img/team/JPEG/ELttyHHxDU.jpg",
+    "call": "+971501234576",
+    "email": "armin.gharineiat@example.com",
+    "whatsapp": "+971501234576",
+    "description": {
+      "summary": "Armin builds lasting relationships with investors and buyers.",
+      "personal": "Loves architecture and modern design.",
+      "motto": "Understand, advise, close."
+    }
+  },
+  {
+    "id": "barbara-marques-barlavento",
+    "name": "Barbara Marques Barlavento",
+    "position": "Property Consultant",
+    "experience": "3 years",
+    "languages": "English, Portuguese",
+    "specialization": "Consulting",
+    "language": "English",
+    "img": "https://fnst.axflare.com/img/team/JPEG/QoEuUnOffV.jpg",
+    "call": "+971501234577",
+    "email": "barbara.barlavento@example.com",
+    "whatsapp": "+971501234577",
+    "description": {
+      "summary": "Barbara supports clients relocating to the UAE.",
+      "personal": "Speaks Portuguese and practices Capoeira.",
+      "motto": "From conversation to conversion."
+    }
+  },
+  {
+    "id": "nadezhda-faskhieva",
+    "name": "Nadezhda Faskhieva",
+    "position": "Property Expert",
+    "experience": "6 years",
+    "languages": "English, Russian",
+    "specialization": "Consulting",
+    "language": "English",
+    "img": "https://fnst.axflare.com/img/team/JPEG/zBhHhfyzoQ.jpg",
+    "call": "+971501234578",
+    "email": "nadezhda.faskhieva@example.com",
+    "whatsapp": "+971501234578",
+    "description": {
+      "summary": "Nadezhda helps clients through every step of their property journey.",
+      "personal": "Active in charity work and women empowerment.",
+      "motto": "Empathy is the best strategy."
+    }
+  }
+]

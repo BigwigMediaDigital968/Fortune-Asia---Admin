@@ -1,0 +1,130 @@
+import { useState } from "react";
+import { FaStar } from "react-icons/fa";
+import { FaQuoteLeft } from "react-icons/fa6";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+interface Review {
+  name: string;
+  content: string;
+  rating: number;
+}
+
+const reviews: Review[] = [
+  {
+    name: "Ahmed, Dubai ",
+    content:
+      "“Mondus Properties is the best real estate company in Dubai. Transparent, professional, and trustworthy!”",
+    rating: 5,
+  },
+  {
+    name: "Sarah, UK ",
+    content:
+      "“Their property agents in Dubai guided me through off-plan investment with excellent results.”",
+    rating: 4,
+  },
+  {
+    name: "Mohammed, India ",
+    content:
+      "“Reliable service, verified listings, and great ROI. Highly recommended.”",
+    rating: 5,
+  },
+  {
+    name: "ELENA PETROVA, France",
+    content:
+      "Worried about finding the right buyer for my property. But they made the whole process stress-free.",
+    rating: 5,
+  },
+];
+
+const ReviewSection = () => {
+  const [expanded, setExpanded] = useState<number | null>(null);
+
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 600,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    swipeToSlide: true,
+    arrows: false,
+    autoplay: true, // Enable autoplay
+    autoplaySpeed: 3000, // Time between each slide in ms (e.g., 3 seconds)
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
+
+  return (
+    <section className="relative w-full bg-white text-black dark:bg-black dark:text-white py-16 px-6 lg:px-28 font-raleway custom-gradient-lines">
+      <h2 className="text-3xl md:text-4xl font-light mb-6 text-black dark:text-gray-100 text-center">
+        See Why Clients{" "}
+        <span className="text-[var(--primary-color)]">Love Us</span>
+      </h2>
+
+      <Slider {...settings} className="cursor-grab">
+        {reviews.map((review, index) => (
+          <div key={index} className="px-3">
+            <div className="relative bg-white/10 dark:bg-white/5 backdrop-blur-md rounded-xl border border-white/10 dark:border-gray-800 p-6 shadow-lg h-full transition duration-300 hover:shadow-2xl">
+              <FaQuoteLeft className="absolute top-4 left-4 text-[var(--primary-color)] text-2xl opacity-30" />
+
+              <div className="mb-4 mt-6">
+                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {expanded === index
+                    ? review.content
+                    : `${review.content.slice(0, 140)}...`}
+                </p>
+              </div>
+
+              <button
+                onClick={() =>
+                  setExpanded((prev) => (prev === index ? null : index))
+                }
+                className="text-sm text-[var(--primary-color)] hover:underline"
+              >
+                {expanded === index ? "SEE LESS" : "READ MORE"}
+              </button>
+
+              <div className="mt-6 flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-800 dark:text-white">
+                    {review.name}
+                  </h3>
+                  <div className="flex mt-1">
+                    {Array.from({ length: review.rating }).map((_, i) => (
+                      <FaStar
+                        key={i}
+                        className="text-[var(--primary-color)] text-sm mr-1"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="w-10 h-10 rounded-full bg-[var(--primary-color)] text-white flex items-center justify-center text-sm font-bold uppercase">
+                  {review.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </Slider>
+    </section>
+  );
+};
+
+export default ReviewSection;

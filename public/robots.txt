@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Block admin & private routes
+Disallow: /admin
+Disallow: /admin/
+Disallow: /admin-login
+
+# Optional: block API if any
+Disallow: /api/
+
+Sitemap: https://mondusproperties.ae/sitemap.xml
