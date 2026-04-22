@@ -81,8 +81,7 @@ export interface PropertyForm {
 }
 
 type ImageItem =
-  | { id: string; type: "existing"; url: string }
-  | { id: string; type: "new"; file: File; preview: string };
+  | { id: string | number; type: "existing" | "new"; url?: string; file?: File | string; preview?: string };
 
 /* ================= CONFIG ================= */
 
@@ -178,7 +177,7 @@ const PropertyManagement = () => {
     setImages((prev) => [...prev, ...newImages]);
   };
 
-  const removeImage = (id: string) => {
+  const removeImage = (id: string | number) => {
     setImages((prev) => prev.filter((img) => img.id !== id));
   };
 
@@ -192,6 +191,7 @@ const PropertyManagement = () => {
     dragItem.current = null;
     dragOverItem.current = null;
     setImages(list);
+    console.log("New Image Order:", list);
   };
 
   // View modal
@@ -287,11 +287,21 @@ const PropertyManagement = () => {
       if (form.googleMapUrl) formData.append("googleMapUrl", form.googleMapUrl);
 
       /* IMAGES */
+      const imageOrder: ImageItem[] = [];
+      let newFileCount = 0;
+
       images.forEach((img) => {
-        if (img.type === "new") {
+        if (img.type === "existing") {
+          imageOrder.push(img);
+        } else if (img.type === "new" && img.file) {
+          imageOrder.push(img);
           formData.append("propertyImages", img.file);
+          newFileCount++;
         }
       });
+
+      // Send the exact interleaved order of both old and new images
+      formData.append("imageOrder", JSON.stringify(imageOrder));
 
       /* BROCHURE */
       if (brochure) {
@@ -300,11 +310,10 @@ const PropertyManagement = () => {
 
       /* API CALL */
       if (editing) {
-        console.log("formData", formData);
-        // await axios.put(
-        //   `${API_BASE_URL}/api/property/${editing._id}`,
-        //   formData,
-        // );
+        await axios.put(
+          `${API_BASE_URL}/api/property/${editing._id}`,
+          formData,
+        );
         toast.success("Property updated successfully");
       } else {
         await axios.post(`${API_BASE_URL}/api/property`, formData);
@@ -811,12 +820,24 @@ const PropertyManagement = () => {
                       onDragEnter={() => (dragOverItem.current = index)}
                       onDragEnd={handleDragEnd}
                       onDragOver={(e) => e.preventDefault()}
-                      className="relative group border border-gray-700 rounded-lg overflow-hidden"
+                      className="relative group border border-gray-700 rounded-lg overflow-hidden cursor-move"
                     >
                       <img
                         src={img.type === "existing" ? img.url : img.preview}
                         className="w-full h-24 object-cover"
                       />
+
+                      {/* Badge for Type */}
+                      <span className={`absolute top-1 left-1 text-[10px] px-1 rounded font-bold uppercase ${img.type === "existing" ? "bg-blue-600/80" : "bg-green-600/80"
+                        }`}>
+                        {img.type === "existing" ? "Old" : "New"}
+                      </span>
+
+                      {/* Index Number */}
+                      <span className="absolute bottom-1 right-1 bg-black/60 text-[10px] px-1.5 py-0.5 rounded text-white font-mono">
+                        #{index + 1}
+                      </span>
+
                       <button
                         onClick={() => removeImage(img.id)}
                         className="absolute top-1 right-1 bg-black/70 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100"
