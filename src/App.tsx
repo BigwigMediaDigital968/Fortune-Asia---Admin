@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   useLocation,
+  Navigate,
 } from "react-router-dom";
 
 import { Landing } from "./pages/Landing";
@@ -45,7 +46,7 @@ function AppWrapper() {
       <SEO />
 
       <Routes>
-        <Route path="/" element={<AdminLogin />} />
+        <Route path="/" element={<Navigate to="/admin" replace />} />
 
         <Route path="*" element={<NotFound />} />
 
