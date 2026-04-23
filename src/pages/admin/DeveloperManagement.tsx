@@ -256,6 +256,7 @@ const DeveloperManagement = () => {
             <InfoRow label="Name" value={viewDeveloper.developerName} />
             <InfoRow label="Slug" value={viewDeveloper.slug} />
             <InfoRow label="Location" value={viewDeveloper.location} />
+            <InfoRow label="Established Year" value={viewDeveloper.establishedYear} />
 
             <TagList title="Highlights" items={viewDeveloper.highlights} />
 
@@ -463,7 +464,7 @@ const Modal = ({
   </div>
 );
 
-const InfoRow = ({ label, value }: { label: string; value?: string }) => (
+const InfoRow = ({ label, value }: { label: string; value?: string | number }) => (
   <div>
     <p className="text-xs text-gray-400">{label}</p>
     <p className="text-sm">{value || "—"}</p>
@@ -476,13 +477,13 @@ const TagList = ({ title, items }: { title: string; items?: string[] }) => (
     <div className="flex flex-wrap gap-2">
       {items?.length
         ? items.map((x, i) => (
-            <span
-              key={x + i}
-              className="text-xs bg-gray-800 border border-gray-700 px-2 py-1 rounded"
-            >
-              {x}
-            </span>
-          ))
+          <span
+            key={x + i}
+            className="text-xs bg-gray-800 border border-gray-700 px-2 py-1 rounded"
+          >
+            {x}
+          </span>
+        ))
         : "—"}
     </div>
   </div>

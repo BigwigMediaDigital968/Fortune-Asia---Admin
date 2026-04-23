@@ -34,6 +34,7 @@ import DeveloperManagement from "./pages/admin/DeveloperManagement";
 import AddBlogPage from "./components/AddBlogPage";
 import SEO from "./components/SEO";
 import NotFound from "./components/NotFound";
+import AdminLeadManagement from "./pages/admin/AdminLeadManagement";
 
 function AppWrapper() {
   const location = useLocation();
@@ -68,6 +69,7 @@ function AppWrapper() {
             <Route path="emailer" element={<EmailerPage />} />
             <Route path="subscriber" element={<AdminSubscriber />} />
             <Route path="contacts" element={<AdminContactRequest />} />
+            <Route path="leads" element={<AdminLeadManagement />} />
             <Route path="request" element={<AdminNotify />} />
             <Route path="chatleads" element={<ChatbotLead />} />
             <Route path="sendnewsletter" element={<NewsletterForm />} />
