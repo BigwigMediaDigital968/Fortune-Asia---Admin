@@ -35,9 +35,17 @@ import AddBlogPage from "./components/AddBlogPage";
 import SEO from "./components/SEO";
 import NotFound from "./components/NotFound";
 import AdminLeadManagement from "./pages/admin/AdminLeadManagement";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 
 function AppWrapper() {
   const location = useLocation();
+
 
   const isAdminRoute = location.pathname.startsWith("/admin");
 
@@ -127,9 +135,15 @@ function AppWrapper() {
 
 // ✅ Main App entry using Router
 function App() {
+  const queryClient = new QueryClient();
+
   return (
+
     <Router>
-      <AppWrapper />
+      <QueryClientProvider client={queryClient}>
+
+        <AppWrapper />
+      </QueryClientProvider>
     </Router>
   );
 }

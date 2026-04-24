@@ -38,16 +38,17 @@ const AdminLayout = () => {
       label: "Developer Management",
       to: "developer-management",
     },
-    { icon: <Mail />, label: "Newsletter", to: "/admin/newsletter" },
-    { icon: <MailPlus />, label: "Emailer", to: "/admin/emailer" },
-    { icon: <Users />, label: "Subscriber", to: "/admin/subscriber" },
-    // { icon: <MessagesSquare />, label: "Leads", to: "/admin/contacts" },
     { icon: <MessagesSquare />, label: "Leads", to: "/admin/leads" },
-    // { icon: <ClipboardList />, label: "Call Back Leads", to: "/admin/request" },
-    { icon: <Bot />, label: "Chat Leads", to: "/admin/chatleads" },
-    { icon: <NotebookPen />, label: "Blogs", to: "/admin/blogs" },
     { icon: <Building2 />, label: "Listing Requests", to: "/admin/listing" },
+    { icon: <NotebookPen />, label: "Blogs", to: "/admin/blogs" },
     { icon: <Briefcase />, label: "Opportunity", to: "/admin/opportunity" },
+
+    // { icon: <Mail />, label: "Newsletter", to: "/admin/newsletter" },
+    // { icon: <MailPlus />, label: "Emailer", to: "/admin/emailer" },
+    // { icon: <Users />, label: "Subscriber", to: "/admin/subscriber" },
+    // { icon: <MessagesSquare />, label: "Leads", to: "/admin/contacts" },
+    // { icon: <ClipboardList />, label: "Call Back Leads", to: "/admin/request" },
+    // { icon: <Bot />, label: "Chat Leads", to: "/admin/chatleads" },
   ];
 
   const navigate = useNavigate();
