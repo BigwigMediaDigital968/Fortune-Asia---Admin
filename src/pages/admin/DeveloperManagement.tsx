@@ -215,7 +215,9 @@ export default function DeveloperManagement() {
   const createMutation = useMutation({
     mutationFn: (fd: FormData) => axios.post(`${BASE_URL}/api/developers`, fd, { headers: { "Content-Type": "multipart/form-data" } }),
     onSuccess: () => { toast.success("Developer created"); invalidate(); closeForm(); },
-    onError: (e: any) => toast.error(e.response?.data?.message || "Create failed"),
+    onError: (e: any) => {
+      console.log(e);
+      toast.error(e.response?.data?.message || "Create failed");}
   });
 
   const updateMutation = useMutation({
@@ -540,7 +542,7 @@ export default function DeveloperManagement() {
       ══════════════════════════════════════════════════════════ */}
       {formOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#13151c] rounded-2xl w-full max-w-4xl border border-white/10 flex flex-col max-h-[92vh]">
+          <div className="bg-[#13151c] rounded-2xl w-full max-w-5xl border border-white/10 flex flex-col max-h-[92vh]">
             {/* Header */}
             <div className="p-6 border-b border-white/8 flex items-center justify-between flex-shrink-0">
               <div>
@@ -648,7 +650,8 @@ export default function DeveloperManagement() {
                       {form.logoFile && <p className="text-xs text-indigo-400">{form.logoFile.name}</p>}
                     </div>
                   </Field>
-                  <Field label="Cover Image (URL or upload)">
+                  <div className="hidden">
+                    <Field label="Cover Image (URL or upload)">
                     <div className="space-y-2">
                       <input value={form.coverImage}
                         onChange={e => setForm(p => ({ ...p, coverImage: e.target.value, coverImageFile: null }))}
@@ -659,6 +662,7 @@ export default function DeveloperManagement() {
                       {form.coverImageFile && <p className="text-xs text-indigo-400">{form.coverImageFile.name}</p>}
                     </div>
                   </Field>
+                  </div>
                   <Field label="Brochure (PDF upload)" className="md:col-span-2">
                     <FileInput label="Upload Brochure (PDF)" accept=".pdf"
                       onChange={f => setForm(p => ({ ...p, brochureFile: f }))} />
@@ -697,9 +701,19 @@ export default function DeveloperManagement() {
                             className="w-full h-20 object-cover"
                           />
                           {/* Type badge */}
-                          <span className={`absolute top-1 left-1 text-[9px] px-1 py-0.5 rounded font-bold uppercase leading-none ${img.type === "existing" ? "bg-blue-600/90 text-white" : "bg-emerald-600/90 text-white"}`}>
+                          <div className="absolute top-1 left-1 flex gap-1">
+                            <span className={` text-[9px] px-1 py-0.5 rounded font-bold uppercase leading-none ${img.type === "existing" ? "bg-blue-600/90 text-white" : "bg-emerald-600/90 text-white"}`}>
                             {img.type === "existing" ? "old" : "new"}
                           </span>
+                          {
+                            index === 0 && (
+                              <span className={` text-[9px] px-1 py-0.5 rounded font-bold uppercase leading-none bg-yellow-500/90 text-white`}>
+                                {"cover"}
+                              </span>
+                            )
+                          }
+                          </div>
+                          
                           {/* Index */}
                           <span className="absolute bottom-1 right-1 bg-black/70 text-[9px] px-1.5 py-0.5 rounded text-white font-mono leading-none">
                             #{index + 1}
