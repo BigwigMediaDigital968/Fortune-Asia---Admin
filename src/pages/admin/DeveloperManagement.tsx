@@ -1,490 +1,930 @@
-import { useEffect, useState } from "react";
+import { useState, useRef } from "react";
+
+// ─── Image Item Type ──────────────────────────────────────────────────────────
+type ImageItem =
+  | { id: string; type: "existing"; url: string }
+  | { id: string; type: "new"; file: File; preview: string };
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import toast from "react-hot-toast";
-import generateSlug from "../../utils/generateSlug";
-import { Developer, DeveloperForm } from "../../types/developer";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// ─── API Setup ────────────────────────────────────────────────────────────────
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  headers: { "Content-Type": "application/json" },
+});
 
-const DeveloperManagement = () => {
-  const [developers, setDevelopers] = useState<Developer[]>([]);
-  const [loading, setLoading] = useState(false);
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface Developer {
+  _id: string;
+  name: string;
+  slug: string;
+  logo?: string;
+  coverImage?: string;
+  shortDescription: string;
+  fullDescription?: string;
+  website?: string;
+  stats?: { establishedYear?: number; totalProjects?: number };
+  highlights?: string[];
+  amenities?: string[];
+  certifications?: string[];
+  images?: string[];
+  socialLinks?: { facebook?: string; instagram?: string; linkedin?: string; twitter?: string };
+  seo?: { metaTitle?: string; metaDescription?: string; keywords?: string[] };
+  isFeatured: boolean;
+  isActive: boolean;
+  priority?: number;
+  projects?: { _id: string; title: string; slug: string; coverImage?: string; location?: string }[];
+  faqs?: { question: string; answer: string }[];
+  brochure?: string;
+  createdAt: string;
+}
 
-  /* Modals */
+interface Property {
+  _id: string;
+  propertyName: string;
+  slug: string;
+  listingType: "buy" | "rent";
+  propertyType: string;
+  price: number;
+  bedroom: number;
+  bathroom: number;
+  sizeSqft: string;
+  address: string;
+  developerName: string;
+  status: boolean;
+}
+
+interface DeveloperFormState {
+  name: string;
+  slug: string;
+  shortDescription: string;
+  fullDescription: string;
+  website: string;
+  highlights: string;
+  amenities: string;
+  certifications: string;
+  logo: string;
+  coverImage: string;
+  brochure: string;
+  establishedYear: string;
+  totalProjects: string;
+  priority: string;
+  isFeatured: boolean;
+  isActive: boolean;
+  facebook: string;
+  instagram: string;
+  linkedin: string;
+  twitter: string;
+  metaTitle: string;
+  metaDescription: string;
+  keywords: string;
+  // file uploads
+  logoFile?: File | null;
+  coverImageFile?: File | null;
+  brochureFile?: File | null;
+  imageFiles?: File[];
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+const generateSlug = (str: string) =>
+  str.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+const toAssetUrl = (path?: string | null) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return `${BASE_URL}${path}`;
+};
+
+const fmt = (n?: number) => (n !== undefined ? n.toLocaleString() : "—");
+
+// ─── API Calls ────────────────────────────────────────────────────────────────
+const fetchDevelopers = () => api.get("/api/developers?limit=100").then(r => r.data.data as Developer[]);
+const fetchProperties = () => api.get("/api/properties?limit=100").then(r => r.data.data as Property[]);
+const fetchDeveloperStats = () => api.get("/api/developers/stats/overview").then(r => r.data.data);
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+export default function DeveloperManagement() {
+  const qc = useQueryClient();
+
+  const { data: developers = [], isLoading } = useQuery({ queryKey: ["developers"], queryFn: fetchDevelopers });
+  const { data: stats } = useQuery({ queryKey: ["developer-stats"], queryFn: fetchDeveloperStats });
+  const { data: properties = [] } = useQuery({ queryKey: ["properties"], queryFn: fetchProperties });
+
+  const [tab, setTab] = useState<"developers" | "properties">("developers");
+  const [search, setSearch] = useState("");
+  const [filterFeatured, setFilterFeatured] = useState<"" | "true" | "false">("");
+  const [filterActive, setFilterActive] = useState<"" | "true" | "false">("");
+
+  // Modals
   const [formOpen, setFormOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-
   const [editing, setEditing] = useState<Developer | null>(null);
-  const [viewDeveloper, setViewDeveloper] = useState<Developer | null>(null);
-  const [selectedDeveloper, setSelectedDeveloper] = useState<Developer | null>(
-    null,
-  );
-
-  /* Form state */
+  const [viewDev, setViewDev] = useState<Developer | null>(null);
+  const [toDelete, setToDelete] = useState<Developer | null>(null);
   const [slugTouched, setSlugTouched] = useState(false);
 
-  const [form, setForm] = useState<DeveloperForm>({
-    developerName: "",
-    slug: "",
-    shortDescription: "",
-    highlights: "",
-    location: "",
-    developerLogo: "",
-    establishedYear: undefined,
-    totalProjects: undefined,
-    website: "",
+  // ─── Image manager state ─────────────────────────────────────────────────
+  const [images, setImages] = useState<ImageItem[]>([]);
+  const dragItem = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
+
+  const handleImages = (files: FileList | null) => {
+    if (!files) return;
+    const newImgs: ImageItem[] = Array.from(files).map(file => ({
+      id: crypto.randomUUID(), type: "new", file, preview: URL.createObjectURL(file),
+    }));
+    setImages(prev => [...prev, ...newImgs]);
+  };
+
+  const removeImage = (id: string) =>
+    setImages(prev => prev.filter(img => img.id !== id));
+
+  const handleDragEnd = () => {
+    if (dragItem.current === null || dragOverItem.current === null) return;
+    const list = [...images];
+    const dragged = list.splice(dragItem.current, 1)[0];
+    list.splice(dragOverItem.current, 0, dragged);
+    dragItem.current = null;
+    dragOverItem.current = null;
+    setImages(list);
+  };
+
+  const emptyForm = (): DeveloperFormState => ({
+    name: "", slug: "", shortDescription: "", fullDescription: "", website: "",
+    highlights: "", amenities: "", certifications: "", logo: "", coverImage: "",
+    brochure: "", establishedYear: "", totalProjects: "", priority: "0",
+    isFeatured: false, isActive: true,
+    facebook: "", instagram: "", linkedin: "", twitter: "",
+    metaTitle: "", metaDescription: "", keywords: "",
+    logoFile: null, coverImageFile: null, brochureFile: null,
   });
 
-  /* ================= FETCH ================= */
+  const [form, setForm] = useState<DeveloperFormState>(emptyForm());
 
-  const fetchDevelopers = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.get(`${API_BASE_URL}/api/developers`);
-      setDevelopers(res.data.data);
-    } catch {
-      toast.error("Failed to load developers");
-    } finally {
-      setLoading(false);
-    }
+  // ─── Mutations ──────────────────────────────────────────────────────────────
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["developers"] });
+    qc.invalidateQueries({ queryKey: ["developer-stats"] });
   };
 
-  useEffect(() => {
-    fetchDevelopers();
-  }, []);
+  const buildFormData = (f: DeveloperFormState): FormData => {
+    const fd = new FormData();
+    fd.append("name", f.name);
+    fd.append("slug", f.slug);
+    fd.append("shortDescription", f.shortDescription);
+    if (f.fullDescription) fd.append("fullDescription", f.fullDescription);
+    if (f.website) fd.append("website", f.website);
+    if (f.highlights) fd.append("highlights", f.highlights);
+    if (f.amenities) fd.append("amenities", f.amenities);
+    if (f.certifications) fd.append("certifications", f.certifications);
+    if (f.coverImage) fd.append("coverImage", f.coverImage);
+    if (f.establishedYear) fd.append("stats[establishedYear]", f.establishedYear);
+    if (f.totalProjects) fd.append("stats[totalProjects]", f.totalProjects);
+    fd.append("priority", f.priority || "0");
+    fd.append("isFeatured", String(f.isFeatured));
+    fd.append("isActive", String(f.isActive));
+    if (f.facebook) fd.append("socialLinks[facebook]", f.facebook);
+    if (f.instagram) fd.append("socialLinks[instagram]", f.instagram);
+    if (f.linkedin) fd.append("socialLinks[linkedin]", f.linkedin);
+    if (f.twitter) fd.append("socialLinks[twitter]", f.twitter);
+    if (f.metaTitle) fd.append("seo[metaTitle]", f.metaTitle);
+    if (f.metaDescription) fd.append("seo[metaDescription]", f.metaDescription);
+    if (f.keywords) fd.append("seo[keywords]", f.keywords);
+    if (f.logoFile) fd.append("logo", f.logoFile);
+    if (f.coverImageFile) fd.append("coverImage", f.coverImageFile);
+    if (f.brochureFile) fd.append("brochure", f.brochureFile);
 
-  const toAssetUrl = (path?: string | null) => {
-    if (!path) return "";
-    if (path.startsWith("http")) return path;
-    return `${API_BASE_URL}${path}`;
-  };
-
-  /* ================= SUBMIT ================= */
-
-  const handleSubmit = async () => {
-    try {
-      if (
-        !form.developerName ||
-        !form.slug ||
-        !form.shortDescription ||
-        !form.location ||
-        !form.developerLogo
-      ) {
-        toast.error("Please fill all required fields");
-        return;
-      }
-
-      const payload = {
-        developerName: form.developerName,
-        slug: form.slug,
-        shortDescription: form.shortDescription,
-        location: form.location,
-        developerLogo: form.developerLogo, // URL
-        highlights: form.highlights,
-        establishedYear: form.establishedYear,
-        totalProjects: form.totalProjects,
-        website: form.website,
-      };
-
-      if (editing) {
-        await axios.put(
-          `${API_BASE_URL}/api/developers/${editing._id}`,
-          payload,
-        );
-        toast.success("Developer updated successfully");
+    // ── Image order: append new files in order, send imageOrder manifest ──
+    const imageOrder: { type: "existing" | "new"; url?: string }[] = [];
+    images.forEach(img => {
+      if (img.type === "existing") {
+        imageOrder.push({ type: "existing", url: img.url });
       } else {
-        await axios.post(`${API_BASE_URL}/api/developers`, payload);
-        toast.success("Developer created successfully");
+        imageOrder.push({ type: "new" });
+        fd.append("images", img.file);
       }
+    });
+    if (images.length > 0) fd.append("imageOrder", JSON.stringify(imageOrder));
 
-      closeForm();
-      fetchDevelopers();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Operation failed");
-    }
+    return fd;
   };
 
-  /* ================= HELPERS ================= */
+  const createMutation = useMutation({
+    mutationFn: (fd: FormData) => axios.post(`${BASE_URL}/api/developers`, fd, { headers: { "Content-Type": "multipart/form-data" } }),
+    onSuccess: () => { toast.success("Developer created"); invalidate(); closeForm(); },
+    onError: (e: any) => toast.error(e.response?.data?.message || "Create failed"),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, fd }: { id: string; fd: FormData }) =>
+      axios.put(`${BASE_URL}/api/developers/${id}`, fd, { headers: { "Content-Type": "multipart/form-data" } }),
+    onSuccess: () => { toast.success("Developer updated"); invalidate(); closeForm(); },
+    onError: (e: any) => toast.error(e.response?.data?.message || "Update failed"),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => api.delete(`/api/developers/${id}`),
+    onSuccess: () => { toast.success("Developer deleted"); invalidate(); setConfirmOpen(false); setToDelete(null); },
+    onError: () => toast.error("Delete failed"),
+  });
+
+  const toggleFeaturedMutation = useMutation({
+    mutationFn: (id: string) => api.patch(`/api/developers/${id}/toggle-featured`),
+    onSuccess: () => invalidate(),
+    onError: () => toast.error("Failed"),
+  });
+
+  const toggleActiveMutation = useMutation({
+    mutationFn: (id: string) => api.patch(`/api/developers/${id}/toggle-active`),
+    onSuccess: () => invalidate(),
+    onError: () => toast.error("Failed"),
+  });
+
+  // ─── Form Helpers ───────────────────────────────────────────────────────────
+  const openCreate = () => { setEditing(null); setSlugTouched(false); setForm(emptyForm()); setFormOpen(true); };
 
   const openEdit = (d: Developer) => {
     setEditing(d);
     setSlugTouched(true);
-
+    // seed image manager with existing images
+    setImages((d.images ?? []).map(url => ({ id: crypto.randomUUID(), type: "existing" as const, url })));
     setForm({
-      developerName: d.developerName,
-      slug: d.slug,
-      shortDescription: d.shortDescription,
-      highlights: d.highlights.join(", "),
-      location: d.location,
-      developerLogo: d.developerLogo,
-      establishedYear: d.establishedYear,
-      totalProjects: d.totalProjects,
-      website: d.website,
+      name: d.name, slug: d.slug, shortDescription: d.shortDescription,
+      fullDescription: d.fullDescription || "", website: d.website || "",
+      highlights: d.highlights?.join(", ") || "",
+      amenities: d.amenities?.join(", ") || "",
+      certifications: d.certifications?.join(", ") || "",
+      logo: d.logo || "", coverImage: d.coverImage || "", brochure: d.brochure || "",
+      establishedYear: d.stats?.establishedYear?.toString() || "",
+      totalProjects: d.stats?.totalProjects?.toString() || "",
+      priority: d.priority?.toString() || "0",
+      isFeatured: d.isFeatured, isActive: d.isActive,
+      facebook: d.socialLinks?.facebook || "", instagram: d.socialLinks?.instagram || "",
+      linkedin: d.socialLinks?.linkedin || "", twitter: d.socialLinks?.twitter || "",
+      metaTitle: d.seo?.metaTitle || "", metaDescription: d.seo?.metaDescription || "",
+      keywords: d.seo?.keywords?.join(", ") || "",
+      logoFile: null, coverImageFile: null, brochureFile: null, imageFiles: [],
     });
     setFormOpen(true);
   };
 
-  const openView = (d: Developer) => {
-    setViewDeveloper(d);
-    setViewOpen(true);
-  };
+  const closeForm = () => { setFormOpen(false); setEditing(null); setSlugTouched(false); setForm(emptyForm()); setImages([]); };
 
-  const closeForm = () => {
-    setFormOpen(false);
-    setEditing(null);
-    setSlugTouched(false);
-    setForm({
-      developerName: "",
-      slug: "",
-      shortDescription: "",
-      highlights: "",
-      location: "",
-      developerLogo: "",
-      website: "",
-    });
-  };
-
-  const openDeleteConfirm = (d: Developer) => {
-    setSelectedDeveloper(d);
-    setConfirmOpen(true);
-  };
-
-  const closeConfirm = () => {
-    setConfirmOpen(false);
-    setSelectedDeveloper(null);
-  };
-
-  const handleConfirm = async () => {
-    if (!selectedDeveloper) return;
-
-    try {
-      await axios.delete(
-        `${API_BASE_URL}/api/developers/${selectedDeveloper._id}`,
-      );
-      toast.success("Developer deleted");
-
-      fetchDevelopers();
-    } catch {
-      toast.error("Operation failed");
-    } finally {
-      closeConfirm();
+  const handleSubmit = () => {
+    if (!form.name || !form.slug || !form.shortDescription) {
+      toast.error("Name, slug, and short description are required");
+      return;
     }
+    const fd = buildFormData(form);
+    if (editing) updateMutation.mutate({ id: editing._id, fd });
+    else createMutation.mutate(fd);
   };
 
-  /* ================= UI ================= */
+  // ─── Filtered Data ──────────────────────────────────────────────────────────
+  const filteredDevelopers = developers.filter(d => {
+    const matchSearch = !search || d.name.toLowerCase().includes(search.toLowerCase()) || d.slug.includes(search.toLowerCase());
+    const matchFeatured = filterFeatured === "" || String(d.isFeatured) === filterFeatured;
+    const matchActive = filterActive === "" || String(d.isActive) === filterActive;
+    return matchSearch && matchFeatured && matchActive;
+  });
+
+  const filteredProperties = properties.filter(p =>
+    !search || p.propertyName.toLowerCase().includes(search.toLowerCase()) || p.developerName.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const isBusy = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      {/* Header */}
-      <div className="flex justify-between mb-6">
-        <h1 className="text-3xl font-bold">Developer Management</h1>
-        <button
-          onClick={() => setFormOpen(true)}
-          className="bg-indigo-600 px-4 py-2 rounded"
-        >
-          + Add Developer
+    <div style={{ fontFamily: "'DM Sans', 'Segoe UI', sans-serif" }} className="min-h-screen bg-[#0d0f14] text-white">
+      {/* ── Header ── */}
+      <div className="border-b border-white/5 px-8 py-5 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Developer & Property Hub</h1>
+          <p className="text-xs text-white/40 mt-0.5">Manage real estate developers and listings</p>
+        </div>
+        <button onClick={openCreate}
+          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          <span className="text-lg leading-none">+</span> Add Developer
         </button>
       </div>
 
-      {/* TABLE */}
-      <table className="w-full border border-gray-700 text-sm">
-        <thead className="bg-gray-800">
-          <tr>
-            <th className="p-3 text-left">Developer</th>
-            <th className="p-3">Location</th>
-            <th className="p-3 text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan={4} className="p-6 text-center">
-                Loading...
-              </td>
-            </tr>
-          ) : (
-            developers.map((d) => (
-              <tr key={d._id} className="border-t border-gray-700">
-                <td className="p-3 flex items-center gap-3">
-                  {d.developerLogo && (
-                    <img
-                      src={toAssetUrl(d.developerLogo)}
-                      className="w-10 h-10 rounded object-contain bg-white"
-                    />
-                  )}
-                  {d.developerName}
-                </td>
-                <td className="p-3 text-center">{d.location}</td>
-                <td className="p-3 flex gap-2 justify-end">
-                  <button
-                    onClick={() => openView(d)}
-                    className="bg-gray-700 px-2 py-1 rounded"
-                  >
-                    View
-                  </button>
-                  <button
-                    onClick={() => openEdit(d)}
-                    className="bg-blue-600 px-2 py-1 rounded"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => openDeleteConfirm(d)}
-                    className="bg-red-600 px-2 py-1 rounded"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-
-      {/* ================= VIEW MODAL ================= */}
-      {viewOpen && viewDeveloper && (
-        <Modal title="Developer Details" onClose={() => setViewOpen(false)}>
-          <div className="space-y-4">
-            {viewDeveloper.developerLogo && (
-              <img
-                src={toAssetUrl(viewDeveloper.developerLogo)}
-                className="h-28 object-contain bg-white rounded p-2"
-              />
-            )}
-
-            <InfoRow label="Name" value={viewDeveloper.developerName} />
-            <InfoRow label="Slug" value={viewDeveloper.slug} />
-            <InfoRow label="Location" value={viewDeveloper.location} />
-            <InfoRow label="Established Year" value={viewDeveloper.establishedYear} />
-
-            <TagList title="Highlights" items={viewDeveloper.highlights} />
-
-            <div>
-              <p className="text-xs text-gray-400 mb-1">Description</p>
-              <p className="text-sm text-gray-200">
-                {viewDeveloper.shortDescription}
-              </p>
+      {/* ── Stats ── */}
+      {stats && (
+        <div className="px-8 py-5 grid grid-cols-2 md:grid-cols-5 gap-3">
+          {[
+            { label: "Total", value: stats.totalDevelopers, color: "text-white" },
+            { label: "Active", value: stats.activeDevelopers, color: "text-emerald-400" },
+            { label: "Featured", value: stats.featuredDevelopers, color: "text-amber-400" },
+            { label: "Inactive", value: stats.inactiveDevelopers, color: "text-red-400" },
+            { label: "Projects", value: stats.totalProjects, color: "text-sky-400" },
+          ].map(s => (
+            <div key={s.label} className="bg-white/4 border border-white/8 rounded-xl p-4">
+              <p className="text-xs text-white/40 mb-1">{s.label}</p>
+              <p className={`text-2xl font-bold ${s.color}`}>{fmt(s.value)}</p>
             </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Tabs ── */}
+      <div className="px-8 flex gap-1 border-b border-white/5">
+        {(["developers", "properties"] as const).map(t => (
+          <button key={t} onClick={() => setTab(t)}
+            className={`px-4 py-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${tab === t ? "border-indigo-500 text-white" : "border-transparent text-white/40 hover:text-white/70"}`}>
+            {t}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Filters ── */}
+      <div className="px-8 py-4 flex gap-3 flex-wrap">
+        <input value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="Search…"
+          className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 w-56 focus:outline-none focus:border-indigo-500" />
+        {tab === "developers" && (
+          <>
+            <select value={filterFeatured} onChange={e => setFilterFeatured(e.target.value as any)}
+              className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+              <option value="">All Featured</option>
+              <option value="true">Featured</option>
+              <option value="false">Not Featured</option>
+            </select>
+            <select value={filterActive} onChange={e => setFilterActive(e.target.value as any)}
+              className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+              <option value="">All Status</option>
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+          </>
+        )}
+      </div>
+
+      {/* ── Table ── */}
+      <div className="px-8 pb-10">
+        {tab === "developers" ? (
+          <div className="rounded-xl border border-white/8 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-white/4 text-white/50 text-xs uppercase tracking-wide">
+                <tr>
+                  <th className="p-4 text-left">Developer</th>
+                  <th className="p-4 text-left hidden md:table-cell">Description</th>
+                  <th className="p-4 text-center hidden lg:table-cell">Projects</th>
+                  <th className="p-4 text-center">Featured</th>
+                  <th className="p-4 text-center">Active</th>
+                  <th className="p-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr><td colSpan={6} className="p-10 text-center text-white/30">Loading…</td></tr>
+                ) : filteredDevelopers.length === 0 ? (
+                  <tr><td colSpan={6} className="p-10 text-center text-white/30">No developers found</td></tr>
+                ) : filteredDevelopers.map((d, i) => (
+                  <tr key={d._id} className={`border-t border-white/5 hover:bg-white/3 transition-colors ${i % 2 === 0 ? "" : "bg-white/1"}`}>
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        {d.logo ? (
+                          <img src={toAssetUrl(d.logo)} className="w-10 h-10 rounded-lg object-contain bg-white/10 p-1 flex-shrink-0" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-indigo-900/50 flex items-center justify-center text-indigo-400 font-bold text-sm flex-shrink-0">
+                            {d.name[0]}
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-medium text-white">{d.name}</p>
+                          <p className="text-xs text-white/40">{d.slug}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4 hidden md:table-cell">
+                      <p className="text-white/60 text-xs max-w-xs truncate">{d.shortDescription}</p>
+                    </td>
+                    <td className="p-4 text-center hidden lg:table-cell">
+                      <span className="text-white/60">{d.projects?.length ?? 0}</span>
+                    </td>
+                    <td className="p-4 text-center">
+                      <Toggle checked={d.isFeatured} onChange={() => toggleFeaturedMutation.mutate(d._id)} color="amber" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <Toggle checked={d.isActive} onChange={() => toggleActiveMutation.mutate(d._id)} color="emerald" />
+                    </td>
+                    <td className="p-4">
+                      <div className="flex gap-2 justify-end">
+                        <Btn onClick={() => { setViewDev(d); setViewOpen(true); }} variant="ghost">View</Btn>
+                        <Btn onClick={() => openEdit(d)} variant="blue">Edit</Btn>
+                        <Btn onClick={() => { setToDelete(d); setConfirmOpen(true); }} variant="red">Delete</Btn>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </Modal>
-      )}
+        ) : (
+          <div className="rounded-xl border border-white/8 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-white/4 text-white/50 text-xs uppercase tracking-wide">
+                <tr>
+                  <th className="p-4 text-left">Property</th>
+                  <th className="p-4 text-left hidden md:table-cell">Type</th>
+                  <th className="p-4 text-left hidden md:table-cell">Developer</th>
+                  <th className="p-4 text-right hidden lg:table-cell">Price</th>
+                  <th className="p-4 text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredProperties.length === 0 ? (
+                  <tr><td colSpan={5} className="p-10 text-center text-white/30">No properties found</td></tr>
+                ) : filteredProperties.map((p, i) => (
+                  <tr key={p._id} className={`border-t border-white/5 hover:bg-white/3 transition-colors ${i % 2 === 0 ? "" : "bg-white/1"}`}>
+                    <td className="p-4">
+                      <p className="font-medium text-white">{p.propertyName}</p>
+                      <p className="text-xs text-white/40">{p.address}</p>
+                    </td>
+                    <td className="p-4 hidden md:table-cell">
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${p.listingType === "buy" ? "bg-sky-900/50 text-sky-400" : "bg-purple-900/50 text-purple-400"}`}>
+                        {p.listingType} · {p.propertyType}
+                      </span>
+                    </td>
+                    <td className="p-4 hidden md:table-cell text-white/60">{p.developerName}</td>
+                    <td className="p-4 text-right hidden lg:table-cell text-white/80">AED {fmt(p.price)}</td>
+                    <td className="p-4 text-center">
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${p.status ? "bg-emerald-900/50 text-emerald-400" : "bg-red-900/50 text-red-400"}`}>
+                        {p.status ? "Active" : "Inactive"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
-      {/* ================= CONFIRM MODAL ================= */}
-      {confirmOpen && selectedDeveloper && (
-        <Modal
-          title="Delete Listing"
-          onClose={closeConfirm}
-          actions={
-            <>
-              <button onClick={closeConfirm} className="btn-secondary">
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirm}
-                className="bg-red-600 px-4 py-2 rounded"
-              >
-                Confirm
-              </button>
-            </>
-          }
-        >
-          Are you sure you want to delete?
-          <b>{selectedDeveloper.developerName}</b>?
-        </Modal>
-      )}
-
-      {/* ================= FORM MODAL ================= */}
-      {formOpen && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 rounded-xl w-full max-w-4xl border border-gray-800 overflow-y-auto max-h-[90vh]">
-            <div className="p-6 border-b border-gray-800">
-              <h2 className="text-xl font-semibold">
-                {editing ? "Edit Property" : "Add New Property"}
-              </h2>
-            </div>
-
-            <div className="p-6 space-y-6">
-              {/* FORM */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
-                  placeholder="Developer Name"
-                  value={form.developerName}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    setForm((p) => ({
-                      ...p,
-                      developerName: v,
-                      slug: slugTouched ? p.slug : generateSlug(v),
-                    }));
-                  }}
-                />
-
-                <input
-                  className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
-                  placeholder="Slug"
-                  value={form.slug}
-                  onChange={(e) => {
-                    setSlugTouched(true);
-                    setForm({ ...form, slug: generateSlug(e.target.value) });
-                  }}
-                />
-
-                <input
-                  className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
-                  placeholder="Location"
-                  value={form.location}
-                  onChange={(e) =>
-                    setForm({ ...form, location: e.target.value })
-                  }
-                />
-
-                <textarea
-                  className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
-                  placeholder="Short Description"
-                  value={form.shortDescription}
-                  onChange={(e) =>
-                    setForm({ ...form, shortDescription: e.target.value })
-                  }
-                />
-
-                <textarea
-                  className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
-                  placeholder="Highlights (comma separated)"
-                  value={form.highlights}
-                  onChange={(e) =>
-                    setForm({ ...form, highlights: e.target.value })
-                  }
-                />
-
-                <input
-                  className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
-                  placeholder="Developer Logo URL"
-                  value={form.developerLogo}
-                  onChange={(e) =>
-                    setForm({ ...form, developerLogo: e.target.value })
-                  }
-                />
-
-                {form.developerLogo && (
-                  <img
-                    src={form.developerLogo}
-                    className="h-24 object-contain bg-white rounded p-2"
-                  />
-                )}
-
-                <input
-                  type="number"
-                  className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
-                  placeholder="Established Year"
-                  value={form.establishedYear}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      establishedYear: Number(e.target.value),
-                    })
-                  }
-                />
-
-                <input
-                  type="number"
-                  className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
-                  placeholder="Total Projects"
-                  value={form.totalProjects}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      totalProjects: Number(e.target.value),
-                    })
-                  }
-                />
-
-                {/* <input
-                  className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
-                  placeholder="Website URL"
-                  value={form.website}
-                  onChange={(e) =>
-                    setForm({ ...form, website: e.target.value })
-                  }
-                /> */}
+      {/* ══════════════════════════════════════════════════════════
+          VIEW MODAL
+      ══════════════════════════════════════════════════════════ */}
+      {viewOpen && viewDev && (
+        <Modal title={viewDev.name} onClose={() => setViewOpen(false)} wide>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left */}
+            <div className="space-y-4">
+              {viewDev.logo && (
+                <img src={toAssetUrl(viewDev.logo)} className="h-24 object-contain bg-white/5 rounded-xl p-3" />
+              )}
+              <InfoRow label="Slug" value={viewDev.slug} mono />
+              <InfoRow label="Website" value={viewDev.website} />
+              <InfoRow label="Established Year" value={viewDev.stats?.establishedYear} />
+              <InfoRow label="Total Projects (stats)" value={viewDev.stats?.totalProjects} />
+              <InfoRow label="Priority" value={viewDev.priority} />
+              <div className="flex gap-3">
+                <Badge label="Featured" active={viewDev.isFeatured} />
+                <Badge label="Active" active={viewDev.isActive} />
               </div>
             </div>
+            {/* Right */}
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs text-white/40 mb-1">Short Description</p>
+                <p className="text-sm text-white/80 leading-relaxed">{viewDev.shortDescription}</p>
+              </div>
+              {viewDev.highlights?.length ? <TagList title="Highlights" items={viewDev.highlights} /> : null}
+              {viewDev.amenities?.length ? <TagList title="Amenities" items={viewDev.amenities} /> : null}
+              {viewDev.certifications?.length ? <TagList title="Certifications" items={viewDev.certifications} /> : null}
+              {viewDev.seo?.keywords?.length ? <TagList title="SEO Keywords" items={viewDev.seo.keywords} /> : null}
+            </div>
+          </div>
+          {viewDev.images?.length ? (
+            <div className="mt-4">
+              <p className="text-xs text-white/40 mb-2">Images</p>
+              <div className="flex gap-2 flex-wrap">
+                {viewDev.images.map((img, i) => (
+                  <img key={i} src={toAssetUrl(img)} className="w-24 h-16 object-cover rounded-lg" />
+                ))}
+              </div>
+            </div>
+          ) : null}
+          {viewDev.projects?.length ? (
+            <div className="mt-4">
+              <p className="text-xs text-white/40 mb-2">Linked Projects ({viewDev.projects.length})</p>
+              <div className="flex flex-wrap gap-2">
+                {viewDev.projects.map(p => (
+                  <span key={p._id} className="text-xs bg-indigo-900/40 border border-indigo-700/40 text-indigo-300 px-2 py-1 rounded-lg">{p.title}</span>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </Modal>
+      )}
 
-            {/* ACTIONS */}
-            <div className="flex justify-end gap-3 p-6 border-t border-gray-800">
-              <button
-                onClick={closeForm}
-                className="px-4 py-2 border border-gray-700 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmit}
-                className="bg-indigo-600 hover:bg-indigo-700 px-5 py-2 rounded"
-              >
-                {editing ? "Update Property" : "Create Property"}
-              </button>
+      {/* ══════════════════════════════════════════════════════════
+          DELETE CONFIRM
+      ══════════════════════════════════════════════════════════ */}
+      {confirmOpen && toDelete && (
+        <Modal title="Confirm Delete" onClose={() => { setConfirmOpen(false); setToDelete(null); }}
+          actions={
+            <>
+              <Btn onClick={() => { setConfirmOpen(false); setToDelete(null); }} variant="ghost">Cancel</Btn>
+              <Btn onClick={() => deleteMutation.mutate(toDelete._id)} variant="red">Delete</Btn>
+            </>
+          }>
+          <p className="text-white/70 text-sm">Are you sure you want to delete <span className="text-white font-semibold">{toDelete.name}</span>? This action cannot be undone.</p>
+        </Modal>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════
+          FORM MODAL
+      ══════════════════════════════════════════════════════════ */}
+      {formOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#13151c] rounded-2xl w-full max-w-4xl border border-white/10 flex flex-col max-h-[92vh]">
+            {/* Header */}
+            <div className="p-6 border-b border-white/8 flex items-center justify-between flex-shrink-0">
+              <div>
+                <h2 className="text-lg font-semibold">{editing ? "Edit Developer" : "Add New Developer"}</h2>
+                <p className="text-xs text-white/40 mt-0.5">Fields marked * are required</p>
+              </div>
+              <button onClick={closeForm} className="text-white/40 hover:text-white text-xl transition-colors">✕</button>
+            </div>
+
+            {/* Body */}
+            <div className="overflow-y-auto flex-1 p-6 space-y-8">
+
+              {/* ── Basic Info ── */}
+              <Section title="Basic Information">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Field label="Developer Name *">
+                    <input value={form.name}
+                      onChange={e => {
+                        const v = e.target.value;
+                        setForm(p => ({ ...p, name: v, slug: slugTouched ? p.slug : generateSlug(v) }));
+                      }}
+                      placeholder="e.g. Emaar Properties"
+                      className={inputCls} />
+                  </Field>
+                  <Field label="Slug *" hint="Auto-generated from name">
+                    <input value={form.slug}
+                      onChange={e => { setSlugTouched(true); setForm(p => ({ ...p, slug: generateSlug(e.target.value) })); }}
+                      placeholder="emaar-properties"
+                      className={`${inputCls} font-mono text-indigo-300`} />
+                  </Field>
+                  <Field label="Short Description *" className="md:col-span-2">
+                    <textarea value={form.shortDescription}
+                      onChange={e => setForm(p => ({ ...p, shortDescription: e.target.value }))}
+                      placeholder="Brief description (max 300 chars)"
+                      rows={2} maxLength={300}
+                      className={`${inputCls} resize-none`} />
+                    <p className="text-right text-xs text-white/30 mt-1">{form.shortDescription.length}/300</p>
+                  </Field>
+                  <Field label="Full Description" className="md:col-span-2">
+                    <textarea value={form.fullDescription}
+                      onChange={e => setForm(p => ({ ...p, fullDescription: e.target.value }))}
+                      placeholder="Detailed description (supports HTML/Markdown)"
+                      rows={4}
+                      className={`${inputCls} resize-none`} />
+                  </Field>
+                  <Field label="Website URL">
+                    <input value={form.website}
+                      onChange={e => setForm(p => ({ ...p, website: e.target.value }))}
+                      placeholder="https://emaar.com"
+                      className={inputCls} />
+                  </Field>
+                  <Field label="Priority">
+                    <input type="number" value={form.priority}
+                      onChange={e => setForm(p => ({ ...p, priority: e.target.value }))}
+                      placeholder="0"
+                      className={inputCls} />
+                  </Field>
+                  <div className="flex items-center gap-6 md:col-span-2">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input type="checkbox" checked={form.isFeatured}
+                        onChange={e => setForm(p => ({ ...p, isFeatured: e.target.checked }))}
+                        className="w-4 h-4 accent-amber-500" />
+                      <span className="text-sm text-white/70">Featured</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input type="checkbox" checked={form.isActive}
+                        onChange={e => setForm(p => ({ ...p, isActive: e.target.checked }))}
+                        className="w-4 h-4 accent-emerald-500" />
+                      <span className="text-sm text-white/70">Active</span>
+                    </label>
+                  </div>
+                </div>
+              </Section>
+
+              {/* ── Stats ── */}
+              <Section title="Stats">
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="Established Year">
+                    <input type="number" value={form.establishedYear}
+                      onChange={e => setForm(p => ({ ...p, establishedYear: e.target.value }))}
+                      placeholder="e.g. 1997"
+                      className={inputCls} />
+                  </Field>
+                  <Field label="Total Projects">
+                    <input type="number" value={form.totalProjects}
+                      onChange={e => setForm(p => ({ ...p, totalProjects: e.target.value }))}
+                      placeholder="e.g. 150"
+                      className={inputCls} />
+                  </Field>
+                </div>
+              </Section>
+
+              {/* ── Media ── */}
+              <Section title="Media & Assets">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Field label="Logo (URL or upload)">
+                    <div className="space-y-2">
+                      <input value={form.logo}
+                        onChange={e => setForm(p => ({ ...p, logo: e.target.value, logoFile: null }))}
+                        placeholder="https://... or upload below"
+                        className={inputCls} />
+                      <FileInput label="Upload Logo" accept="image/*"
+                        onChange={f => setForm(p => ({ ...p, logoFile: f, logo: f ? f.name : p.logo }))} />
+                      {(form.logo && !form.logoFile) && <img src={toAssetUrl(form.logo)} className="h-14 object-contain bg-white/5 rounded-lg p-2" />}
+                      {form.logoFile && <p className="text-xs text-indigo-400">{form.logoFile.name}</p>}
+                    </div>
+                  </Field>
+                  <Field label="Cover Image (URL or upload)">
+                    <div className="space-y-2">
+                      <input value={form.coverImage}
+                        onChange={e => setForm(p => ({ ...p, coverImage: e.target.value, coverImageFile: null }))}
+                        placeholder="https://..."
+                        className={inputCls} />
+                      <FileInput label="Upload Cover" accept="image/*"
+                        onChange={f => setForm(p => ({ ...p, coverImageFile: f, coverImage: f ? f.name : p.coverImage }))} />
+                      {form.coverImageFile && <p className="text-xs text-indigo-400">{form.coverImageFile.name}</p>}
+                    </div>
+                  </Field>
+                  <Field label="Brochure (PDF upload)" className="md:col-span-2">
+                    <FileInput label="Upload Brochure (PDF)" accept=".pdf"
+                      onChange={f => setForm(p => ({ ...p, brochureFile: f }))} />
+                    {form.brochureFile && <p className="text-xs text-indigo-400 mt-1">{form.brochureFile.name}</p>}
+                    {editing?.brochure && !form.brochureFile && <p className="text-xs text-white/40 mt-1">Current: {editing.brochure.split("/").pop()}</p>}
+                  </Field>
+                </div>
+
+                {/* ── Gallery Image Manager ── */}
+                <div className="mt-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs text-white/50 font-medium">Gallery Images</label>
+                    <span className="text-xs text-white/30">{images.length} image{images.length !== 1 ? "s" : ""}</span>
+                  </div>
+                  {/* Upload trigger */}
+                  <label className="flex items-center gap-2 text-xs border border-dashed border-white/20 rounded-lg px-3 py-2.5 text-white/40 hover:border-indigo-500 hover:text-indigo-400 transition-colors cursor-pointer w-full">
+                    🖼 Add images (multi-select)
+                    <input type="file" accept="image/*" multiple className="hidden"
+                      onChange={e => handleImages(e.target.files)} />
+                  </label>
+                  {/* Drag grid */}
+                  {images.length > 0 && (
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mt-3">
+                      {images.map((img, index) => (
+                        <div
+                          key={img.id}
+                          draggable
+                          onDragStart={() => (dragItem.current = index)}
+                          onDragEnter={() => (dragOverItem.current = index)}
+                          onDragEnd={handleDragEnd}
+                          onDragOver={e => e.preventDefault()}
+                          className="relative group border border-white/10 rounded-lg overflow-hidden cursor-move select-none"
+                        >
+                          <img
+                            src={img.type === "existing" ? toAssetUrl(img.url) : img.preview}
+                            className="w-full h-20 object-cover"
+                          />
+                          {/* Type badge */}
+                          <span className={`absolute top-1 left-1 text-[9px] px-1 py-0.5 rounded font-bold uppercase leading-none ${img.type === "existing" ? "bg-blue-600/90 text-white" : "bg-emerald-600/90 text-white"}`}>
+                            {img.type === "existing" ? "old" : "new"}
+                          </span>
+                          {/* Index */}
+                          <span className="absolute bottom-1 right-1 bg-black/70 text-[9px] px-1.5 py-0.5 rounded text-white font-mono leading-none">
+                            #{index + 1}
+                          </span>
+                          {/* Remove */}
+                          <button
+                            type="button"
+                            onClick={() => removeImage(img.id)}
+                            className="absolute top-1 right-1 bg-black/70 hover:bg-red-600 text-white text-[10px] w-5 h-5 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-xs text-white/25 mt-2">Drag to reorder · Click ✕ to remove · Blue = existing, Green = newly added</p>
+                </div>
+              </Section>
+
+              {/* ── Arrays ── */}
+              <Section title="Lists & Tags" subtitle="Enter comma-separated values">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Field label="Highlights">
+                    <textarea value={form.highlights}
+                      onChange={e => setForm(p => ({ ...p, highlights: e.target.value }))}
+                      placeholder="Award-winning, 25+ years experience, ISO certified"
+                      rows={3} className={`${inputCls} resize-none`} />
+                  </Field>
+                  <Field label="Amenities">
+                    <textarea value={form.amenities}
+                      onChange={e => setForm(p => ({ ...p, amenities: e.target.value }))}
+                      placeholder="Swimming pool, Gym, Parking"
+                      rows={3} className={`${inputCls} resize-none`} />
+                  </Field>
+                  <Field label="Certifications">
+                    <textarea value={form.certifications}
+                      onChange={e => setForm(p => ({ ...p, certifications: e.target.value }))}
+                      placeholder="ISO 9001, Green Building, LEED"
+                      rows={3} className={`${inputCls} resize-none`} />
+                  </Field>
+                </div>
+                {/* Preview tags */}
+                {form.highlights && (
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {form.highlights.split(",").map(h => h.trim()).filter(Boolean).map((h, i) => (
+                      <span key={i} className="text-xs bg-indigo-900/40 border border-indigo-700/30 text-indigo-300 px-2 py-0.5 rounded">{h}</span>
+                    ))}
+                  </div>
+                )}
+              </Section>
+
+              {/* ── Social Links ── */}
+              <Section title="Social Links">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {(["facebook", "instagram", "linkedin", "twitter"] as const).map(k => (
+                    <Field key={k} label={k.charAt(0).toUpperCase() + k.slice(1)}>
+                      <input value={form[k]}
+                        onChange={e => setForm(p => ({ ...p, [k]: e.target.value }))}
+                        placeholder={`https://${k}.com/...`}
+                        className={inputCls} />
+                    </Field>
+                  ))}
+                </div>
+              </Section>
+
+              {/* ── SEO ── */}
+              <Section title="SEO">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Field label="Meta Title">
+                    <input value={form.metaTitle}
+                      onChange={e => setForm(p => ({ ...p, metaTitle: e.target.value }))}
+                      placeholder="Emaar Properties | Dubai Real Estate"
+                      className={inputCls} />
+                  </Field>
+                  <Field label="Keywords (comma-separated)">
+                    <input value={form.keywords}
+                      onChange={e => setForm(p => ({ ...p, keywords: e.target.value }))}
+                      placeholder="real estate, dubai, luxury, villas"
+                      className={inputCls} />
+                  </Field>
+                  <Field label="Meta Description" className="md:col-span-2">
+                    <textarea value={form.metaDescription}
+                      onChange={e => setForm(p => ({ ...p, metaDescription: e.target.value }))}
+                      placeholder="Brief SEO-friendly description"
+                      rows={2} className={`${inputCls} resize-none`} />
+                  </Field>
+                </div>
+                {form.keywords && (
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {form.keywords.split(",").map(k => k.trim()).filter(Boolean).map((k, i) => (
+                      <span key={i} className="text-xs bg-sky-900/40 border border-sky-700/30 text-sky-300 px-2 py-0.5 rounded">{k}</span>
+                    ))}
+                  </div>
+                )}
+              </Section>
+            </div>
+
+            {/* Footer */}
+            <div className="p-6 border-t border-white/8 flex justify-end gap-3 flex-shrink-0">
+              <Btn onClick={closeForm} variant="ghost">Cancel</Btn>
+              <Btn onClick={handleSubmit} variant="primary" disabled={isBusy}>
+                {isBusy ? "Saving…" : editing ? "Update Developer" : "Create Developer"}
+              </Btn>
             </div>
           </div>
         </div>
       )}
     </div>
   );
-};
+}
 
-export default DeveloperManagement;
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
-/* ================= SHARED UI ================= */
+const inputCls = "w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-indigo-500 transition-colors";
 
-const Modal = ({
-  title,
-  onClose,
-  children,
-  actions,
-}: {
-  title: string;
-  onClose: () => void;
-  children: React.ReactNode;
-  actions?: React.ReactNode;
-}) => (
-  <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-    <div className="bg-gray-900 rounded-xl w-full max-w-2xl border border-gray-800">
-      <div className="p-5 border-b border-gray-800 flex justify-between">
-        <h3 className="font-semibold">{title}</h3>
-        <button onClick={onClose}>✕</button>
+function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <div className="mb-4">
+        <h3 className="text-sm font-semibold text-white/80 uppercase tracking-wider">{title}</h3>
+        {subtitle && <p className="text-xs text-white/35 mt-0.5">{subtitle}</p>}
       </div>
-      <div className="p-5 space-y-4">{children}</div>
-      {actions && (
-        <div className="p-5 border-t border-gray-800 flex justify-end gap-2">
-          {actions}
+      {children}
+    </div>
+  );
+}
+
+function Field({ label, hint, children, className = "" }: { label: string; hint?: string; children: React.ReactNode; className?: string }) {
+  return (
+    <div className={className}>
+      <div className="flex items-baseline gap-2 mb-1.5">
+        <label className="text-xs text-white/50 font-medium">{label}</label>
+        {hint && <span className="text-xs text-indigo-400/60">{hint}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function FileInput({ label, accept, onChange }: { label: string; accept: string; onChange: (f: File | null) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
+  return (
+    <>
+      <input ref={ref} type="file" accept={accept} className="hidden"
+        onChange={e => onChange(e.target.files?.[0] ?? null)} />
+      <button type="button" onClick={() => ref.current?.click()}
+        className="text-xs border border-dashed border-white/20 rounded-lg px-3 py-2 text-white/40 hover:border-indigo-500 hover:text-indigo-400 transition-colors w-full text-left">
+        📎 {label}
+      </button>
+    </>
+  );
+}
+
+
+function Toggle({ checked, onChange, color }: { checked: boolean; onChange: () => void; color: "amber" | "emerald" }) {
+  const on = color === "amber" ? "bg-amber-500" : "bg-emerald-500";
+  return (
+    <button onClick={onChange} className={`relative inline-flex w-9 h-5 rounded-full transition-colors ${checked ? on : "bg-white/15"}`}>
+      <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform ${checked ? "translate-x-4" : ""}`} />
+    </button>
+  );
+}
+
+function Btn({ onClick, children, variant, disabled }: {
+  onClick?: () => void; children: React.ReactNode;
+  variant: "ghost" | "blue" | "red" | "primary"; disabled?: boolean;
+}) {
+  const cls = {
+    ghost: "border border-white/15 text-white/60 hover:text-white hover:border-white/30",
+    blue: "bg-blue-600 hover:bg-blue-500 text-white",
+    red: "bg-red-600 hover:bg-red-500 text-white",
+    primary: "bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50",
+  }[variant];
+  return (
+    <button onClick={onClick} disabled={disabled}
+      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${cls}`}>
+      {children}
+    </button>
+  );
+}
+
+function Modal({ title, onClose, children, actions, wide }: {
+  title: string; onClose: () => void; children: React.ReactNode; actions?: React.ReactNode; wide?: boolean;
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className={`bg-[#13151c] rounded-2xl border border-white/10 w-full ${wide ? "max-w-3xl" : "max-w-lg"}`}>
+        <div className="p-5 border-b border-white/8 flex justify-between items-center">
+          <h3 className="font-semibold text-white">{title}</h3>
+          <button onClick={onClose} className="text-white/40 hover:text-white transition-colors">✕</button>
         </div>
-      )}
+        <div className="p-5 max-h-[70vh] overflow-y-auto">{children}</div>
+        {actions && <div className="p-5 border-t border-white/8 flex justify-end gap-2">{actions}</div>}
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
-const InfoRow = ({ label, value }: { label: string; value?: string | number }) => (
-  <div>
-    <p className="text-xs text-gray-400">{label}</p>
-    <p className="text-sm">{value || "—"}</p>
-  </div>
-);
-
-const TagList = ({ title, items }: { title: string; items?: string[] }) => (
-  <div>
-    <p className="text-xs text-gray-400 mb-1">{title}</p>
-    <div className="flex flex-wrap gap-2">
-      {items?.length
-        ? items.map((x, i) => (
-          <span
-            key={x + i}
-            className="text-xs bg-gray-800 border border-gray-700 px-2 py-1 rounded"
-          >
-            {x}
-          </span>
-        ))
-        : "—"}
+function InfoRow({ label, value, mono }: { label: string; value?: string | number; mono?: boolean }) {
+  return (
+    <div>
+      <p className="text-xs text-white/35 mb-0.5">{label}</p>
+      <p className={`text-sm text-white/80 ${mono ? "font-mono text-indigo-300" : ""}`}>{value ?? "—"}</p>
     </div>
-  </div>
-);
+  );
+}
+
+function Badge({ label, active }: { label: string; active: boolean }) {
+  return (
+    <span className={`text-xs px-2 py-1 rounded-full font-medium ${active ? "bg-emerald-900/50 text-emerald-400 border border-emerald-700/30" : "bg-white/5 text-white/30 border border-white/10"}`}>
+      {active ? "✓ " : ""}{label}
+    </span>
+  );
+}
+
+function TagList({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div>
+      <p className="text-xs text-white/35 mb-1.5">{title}</p>
+      <div className="flex flex-wrap gap-1.5">
+        {items.map((x, i) => (
+          <span key={i} className="text-xs bg-white/5 border border-white/10 text-white/70 px-2 py-0.5 rounded">{x}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
