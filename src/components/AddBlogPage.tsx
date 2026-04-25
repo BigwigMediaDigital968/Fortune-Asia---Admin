@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import JoditEditor from "jodit-react";
 import toast, { Toaster } from "react-hot-toast";
+import RichTextEditor from "./TextEditor/RichTextEditor";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL + "/api/blogs";
 
@@ -12,6 +13,8 @@ interface FAQ {
 
 const AddBlogPage = () => {
   const navigate = useNavigate();
+
+  const handleCancel = () => navigate("/admin/blogs");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -111,13 +114,29 @@ const AddBlogPage = () => {
   };
 
   return (
-    <div className="min-h-screen p-6">
-      <Toaster position="top-right" />
+    <>
+    
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+  <Toaster position="top-right" />
 
-      <div className="max-w-5xl mx-auto bg-white text-black p-6 rounded-2xl shadow-lg">
-        <h1 className="text-3xl font-bold mb-6">Add New Blog</h1>
+  {/* Modal Container */}
+  <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-2xl shadow-xl flex flex-col">
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+    {/* Header */}
+    <div className="flex items-center justify-between px-6 py-4 border-b">
+      <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
+        Add New Blog
+      </h1>
+
+      {/* Close Button */}
+      <button onClick={handleCancel} className="text-gray-500 hover:text-black text-xl">
+        ✕
+      </button>
+    </div>
+
+    {/* Scrollable Content */}
+    <div className="overflow-y-auto px-6 py-5 space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
           {/* Title */}
           <input
             name="title"
@@ -151,15 +170,12 @@ const AddBlogPage = () => {
           {/* Editor */}
           <div>
             <label className="font-semibold mb-2 block">Content</label>
-            <JoditEditor
-              value={formData.content}
-              onChange={(newContent) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  content: newContent,
-                }))
-              }
-            />
+            <RichTextEditor
+        value={formData.content}
+        onChange={(newContent) =>
+          setFormData((prev) => ({ ...prev, content: newContent }))
+        }
+      />
           </div>
 
           {/* Author */}
@@ -250,7 +266,7 @@ const AddBlogPage = () => {
           <div className="flex justify-end gap-4">
             <button
               type="button"
-              onClick={() => navigate("/admin/blogs")}
+              onClick={handleCancel}
               className="px-5 py-2 bg-gray-300 rounded cursor-pointer"
             >
               Cancel
@@ -266,8 +282,21 @@ const AddBlogPage = () => {
             </button>
           </div>
         </form>
-      </div>
     </div>
+
+    {/* Footer */}
+    <div className="px-6 py-4 border-t flex justify-end gap-3 hidden">
+      <button className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">
+        Cancel
+      </button>
+      <button className="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800">
+        Publish
+      </button>
+    </div>
+
+  </div>
+</div>
+    </>
   );
 };
 

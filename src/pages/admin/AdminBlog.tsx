@@ -41,6 +41,7 @@ const AdminBlog = () => {
       });
 
       setBlogs(sortedBlogs);
+      console.log(blogs)
     } catch (error) {
       console.error("Failed to fetch blogs", error);
       setBlogs([]);
