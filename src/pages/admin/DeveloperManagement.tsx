@@ -488,7 +488,8 @@ export default function DeveloperManagement() {
                   <th className="p-4 text-center hidden lg:table-cell">
                     Projects
                   </th>
-                  <th className="p-4 text-center">Featured</th>
+                  {/**                  <th className="p-4 text-center">Featured</th>
+                   */}
                   <th className="p-4 text-center">Active</th>
                   <th className="p-4 text-right">Actions</th>
                 </tr>
@@ -540,13 +541,15 @@ export default function DeveloperManagement() {
                           {d.projects?.length ?? 0}
                         </span>
                       </td>
-                      <td className="p-4 text-center">
+                      {/**
+                       * <td className="p-4 text-center">
                         <Toggle
                           checked={d.isFeatured}
                           onChange={() => toggleFeaturedMutation.mutate(d._id)}
                           color="amber"
                         />
                       </td>
+                       */}
                       <td className="p-4 text-center">
                         <Toggle
                           checked={d.isActive}
