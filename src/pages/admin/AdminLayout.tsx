@@ -41,7 +41,7 @@ const AdminLayout = () => {
     { icon: <MessagesSquare />, label: "Leads", to: "/admin/leads" },
     { icon: <Building2 />, label: "Listing Requests", to: "/admin/listing" },
     { icon: <NotebookPen />, label: "Blogs", to: "/admin/blogs" },
-    { icon: <Briefcase />, label: "Opportunity", to: "/admin/opportunity" },
+    // { icon: <Briefcase />, label: "Opportunity", to: "/admin/opportunity" },
 
     // { icon: <Mail />, label: "Newsletter", to: "/admin/newsletter" },
     // { icon: <MailPlus />, label: "Emailer", to: "/admin/emailer" },
@@ -92,10 +92,11 @@ const AdminLayout = () => {
                 key={to}
                 to={to}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded ${location.pathname === to
-                  ? "bg-[var(--primary-color)] text-black font-semibold"
-                  : "hover:bg-[var(--primary-color)] hover:text-black"
-                  }`}
+                className={`flex items-center gap-3 px-4 py-3 rounded ${
+                  location.pathname === to
+                    ? "bg-[var(--primary-color)] text-black font-semibold"
+                    : "hover:bg-[var(--primary-color)] hover:text-black"
+                }`}
               >
                 {icon} {label}
               </Link>
@@ -114,7 +115,11 @@ const AdminLayout = () => {
       {/* Sidebar for Desktop */}
       <aside className="hidden lg:flex lg:flex-col w-64 bg-[#111] shadow-md p-4 fixed h-full">
         <a href="/admin" className="py-4">
-          <img src={logo} alt="logo" className="h-10 w-auto mx-auto mb-2 invert brightness-0" />
+          <img
+            src={logo}
+            alt="logo"
+            className="h-10 w-auto mx-auto mb-2 invert brightness-0"
+          />
         </a>
         <nav className="flex-1 flex flex-col gap-2 text-sm overflow-y-auto">
           {navItems.map(({ icon, label, to }) => (
@@ -218,10 +223,11 @@ const NavItem = ({
 }) => (
   <Link
     to={to}
-    className={`flex items-center gap-2 px-3 py-2 rounded whitespace-nowrap ${active
-      ? "bg-[var(--primary-color)] text-black font-semibold"
-      : "hover:bg-[var(--primary-color)] hover:text-black"
-      }`}
+    className={`flex items-center gap-2 px-3 py-2 rounded whitespace-nowrap ${
+      active
+        ? "bg-[var(--primary-color)] text-black font-semibold"
+        : "hover:bg-[var(--primary-color)] hover:text-black"
+    }`}
   >
     {icon} {label}
   </Link>
