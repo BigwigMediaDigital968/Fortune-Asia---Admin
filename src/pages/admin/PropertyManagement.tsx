@@ -815,7 +815,11 @@ const PropertyManagement = () => {
 
               <select
                 className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                value={form.developer._id || ""}
+                value={
+                  typeof form.developer === "string"
+                    ? form.developer
+                    : form.developer?._id || ""
+                }
                 onChange={(e) =>
                   setForm({ ...form, developer: e.target.value })
                 }

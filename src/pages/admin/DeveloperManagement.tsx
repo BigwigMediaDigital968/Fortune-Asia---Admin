@@ -360,7 +360,7 @@ export default function DeveloperManagement() {
     (p) =>
       !search ||
       p.propertyName.toLowerCase().includes(search.toLowerCase()) ||
-      p.developerName.toLowerCase().includes(search.toLowerCase()),
+      p.developer.name.toLowerCase().includes(search.toLowerCase()),
   );
 
   const isBusy = createMutation.isPending || updateMutation.isPending;
@@ -626,7 +626,7 @@ export default function DeveloperManagement() {
                         </span>
                       </td>
                       <td className="p-4 hidden md:table-cell text-white/60">
-                        {p.developerName}
+                        {p.developer.name}
                       </td>
                       <td className="p-4 text-right hidden lg:table-cell text-white/80">
                         AED {fmt(p.price)}
