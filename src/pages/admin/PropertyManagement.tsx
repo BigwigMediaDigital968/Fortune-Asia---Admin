@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import generateSlug from "../../utils/generateSlug";
+import { api } from "../../lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { Developer } from "../../types/developer";
 
 /* ================= TYPES ================= */
 
@@ -26,7 +29,7 @@ export interface Property {
   address: string;
   subArea: string;
 
-  developerName: string;
+  developer: Developer;
 
   propertyDetails: string;
 
@@ -63,7 +66,7 @@ export interface PropertyForm {
   address: string;
   subArea: string;
 
-  developerName: string;
+  developer: Developer | string;
   propertyDetails: string;
 
   /* NEW UI FIELDS */
@@ -80,8 +83,13 @@ export interface PropertyForm {
   propertyBrochure?: File | null | string;
 }
 
-type ImageItem =
-  | { id: string | number; type: "existing" | "new"; url?: string; file?: File | string; preview?: string };
+type ImageItem = {
+  id: string | number;
+  type: "existing" | "new";
+  url?: string;
+  file?: File | string;
+  preview?: string;
+};
 
 /* ================= CONFIG ================= */
 
@@ -127,7 +135,7 @@ const PropertyManagement = () => {
     address: "",
     subArea: "",
 
-    developerName: "",
+    developer: "",
     propertyDetails: "",
 
     highlights: "",
@@ -159,6 +167,16 @@ const PropertyManagement = () => {
   useEffect(() => {
     fetchProperties();
   }, []);
+
+  const fetchDevelopers = () =>
+    api
+      .get("/api/developers?limit=100")
+      .then((r) => r.data.data as Developer[]);
+
+  const { data: developers = [], isLoading } = useQuery({
+    queryKey: ["developers"],
+    queryFn: fetchDevelopers,
+  });
 
   console.log(properties);
 
@@ -247,7 +265,8 @@ const PropertyManagement = () => {
         !form.propertyType ||
         !form.address ||
         !form.propertyDetails ||
-        !form.price
+        !form.price ||
+        !form.developer
       ) {
         toast.error("Please fill all required fields");
         return;
@@ -262,11 +281,15 @@ const PropertyManagement = () => {
       formData.append("propertyType", form.propertyType);
       formData.append("address", form.address);
       formData.append("subArea", form.subArea);
-      formData.append("developerName", form.developerName);
+      const devId =
+        typeof form.developer === "string"
+          ? form.developer
+          : form.developer?._id;
+      formData.append("developer", devId);
       formData.append("propertyDetails", form.propertyDetails);
 
       /* NUMBERS */
-      formData.append("price", String(Number(form.price)));
+      formData.append("price", form.price);
       formData.append("bedroom", String(Number(form.bedroom)));
       formData.append("bathroom", String(Number(form.bathroom)));
       formData.append("sizeSqft", String(Number(form.sizeSqft)));
@@ -366,6 +389,8 @@ const PropertyManagement = () => {
     setEditing(p);
     setSlugTouched(false);
 
+    console.log("Editing Property:", p);
+
     setForm({
       propertyName: p.propertyName,
       slug: p.slug,
@@ -381,7 +406,7 @@ const PropertyManagement = () => {
       address: p.address,
       subArea: p.subArea || "",
 
-      developerName: p.developerName,
+      developer: p.developer,
       propertyDetails: p.propertyDetails,
 
       highlights: p.highlights?.join(", ") || "",
@@ -429,7 +454,7 @@ const PropertyManagement = () => {
       address: "",
       subArea: "",
 
-      developerName: "",
+      developer: "",
       propertyDetails: "",
 
       highlights: "",
@@ -531,8 +556,9 @@ const PropertyManagement = () => {
                   <td className="p-3 text-center">{p.bedroom}</td>
                   <td className="p-3 text-center">
                     <span
-                      className={`px-2 py-1 text-xs rounded ${p.status ? "bg-green-600" : "bg-red-600"
-                        }`}
+                      className={`px-2 py-1 text-xs rounded ${
+                        p.status ? "bg-green-600" : "bg-red-600"
+                      }`}
                     >
                       {p.status ? "Active" : "Inactive"}
                     </span>
@@ -573,17 +599,17 @@ const PropertyManagement = () => {
 
       {/* Pagination */}
       <div className="flex justify-center gap-2 mt-6">
-        {
-          [...Array(totalPages)]?.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setPage(i + 1)}
-              className={`px-3 py-1 rounded ${page === i + 1 ? "bg-indigo-600" : "bg-gray-700"
-                }`}
-            >
-              {i + 1}
-            </button>
-          ))}
+        {[...Array(totalPages)]?.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setPage(i + 1)}
+            className={`px-3 py-1 rounded ${
+              page === i + 1 ? "bg-indigo-600" : "bg-gray-700"
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
       </div>
 
       {/* ================= Add Form MODAL ================= */}
@@ -787,15 +813,20 @@ const PropertyManagement = () => {
                 />
               </div>
 
-              <input
-                type="string"
-                placeholder="Developer Name"
-                className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
-                value={form.developerName}
+              <select
+                className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                value={form.developer._id || ""}
                 onChange={(e) =>
-                  setForm({ ...form, developerName: e.target.value })
+                  setForm({ ...form, developer: e.target.value })
                 }
-              />
+              >
+                <option value="">Select Developer</option>
+                {developers.map((dev) => (
+                  <option key={dev._id} value={dev._id}>
+                    {dev.name}
+                  </option>
+                ))}
+              </select>
 
               {/* IMAGE UPLOAD */}
               <div>
@@ -828,8 +859,13 @@ const PropertyManagement = () => {
                       />
 
                       {/* Badge for Type */}
-                      <span className={`absolute top-1 left-1 text-[10px] px-1 rounded font-bold uppercase ${img.type === "existing" ? "bg-blue-600/80" : "bg-green-600/80"
-                        }`}>
+                      <span
+                        className={`absolute top-1 left-1 text-[10px] px-1 rounded font-bold uppercase ${
+                          img.type === "existing"
+                            ? "bg-blue-600/80"
+                            : "bg-green-600/80"
+                        }`}
+                      >
                         {img.type === "existing" ? "Old" : "New"}
                       </span>
 
@@ -879,7 +915,10 @@ const PropertyManagement = () => {
                 {brochure && (
                   <div className="mt-2 flex items-center justify-between bg-gray-800 border border-gray-700 rounded px-3 py-2">
                     <span className="text-sm text-gray-300 truncate">
-                      📄 {typeof brochure === "string" ? brochure.split("/").pop() : brochure.name}
+                      📄{" "}
+                      {typeof brochure === "string"
+                        ? brochure.split("/").pop()
+                        : brochure.name}
                     </span>
                     <div className="flex gap-2">
                       {typeof brochure === "string" && (
@@ -969,10 +1008,11 @@ const PropertyManagement = () => {
 
               <button
                 onClick={handleConfirm}
-                className={`px-4 py-2 rounded ${confirmAction === "delete"
-                  ? "bg-red-600 hover:bg-red-700"
-                  : "bg-yellow-600 hover:bg-yellow-700"
-                  }`}
+                className={`px-4 py-2 rounded ${
+                  confirmAction === "delete"
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-yellow-600 hover:bg-yellow-700"
+                }`}
               >
                 Confirm
               </button>
@@ -1014,8 +1054,9 @@ const PropertyManagement = () => {
               {/* Status & Quick stats */}
               <div className="flex flex-wrap items-center gap-3 mb-6">
                 <span
-                  className={`px-2 py-1 text-xs rounded ${viewProperty.status ? "bg-green-600" : "bg-red-600"
-                    }`}
+                  className={`px-2 py-1 text-xs rounded ${
+                    viewProperty.status ? "bg-green-600" : "bg-red-600"
+                  }`}
                 >
                   {viewProperty.status ? "Active" : "Inactive"}
                 </span>
@@ -1069,7 +1110,10 @@ const PropertyManagement = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InfoRow label="Address" value={viewProperty.address} />
                 <InfoRow label="Sub Area" value={viewProperty.subArea} />
-                <InfoRow label="Developer" value={viewProperty.developerName} />
+                <InfoRow
+                  label="Developer"
+                  value={viewProperty.developer?.name || "N/A"}
+                />
                 <InfoRow
                   label="Bedrooms"
                   value={String(viewProperty.bedroom)}

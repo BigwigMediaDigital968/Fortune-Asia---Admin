@@ -1,16 +1,37 @@
 export interface Developer {
   _id: string;
-  developerName: string;
+  name: string;
   slug: string;
+  logo?: string;
+  coverImage?: string;
   shortDescription: string;
-  highlights: string[];
-  location: string;
-  developerLogo: string; // URL (required)
-  establishedYear?: number;
-  totalProjects?: number;
+  fullDescription?: string;
   website?: string;
+  stats?: { establishedYear?: number; totalProjects?: number };
+  highlights?: string[];
+  amenities?: string[];
+  certifications?: string[];
+  images?: string[];
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    linkedin?: string;
+    twitter?: string;
+  };
+  seo?: { metaTitle?: string; metaDescription?: string; keywords?: string[] };
+  isFeatured: boolean;
+  isActive: boolean;
+  priority?: number;
+  projects?: {
+    _id: string;
+    title: string;
+    slug: string;
+    coverImage?: string;
+    location?: string;
+  }[];
+  faqs?: { question: string; answer: string }[];
+  brochure?: string;
   createdAt: string;
-  updatedAt: string;
 }
 
 export interface DeveloperForm {

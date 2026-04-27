@@ -8,6 +8,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { Property } from "./PropertyManagement";
+import { Developer } from "../../types/developer";
 
 // ─── API Setup ────────────────────────────────────────────────────────────────
 export const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -17,56 +19,6 @@ export const api = axios.create({
 });
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-interface Developer {
-  _id: string;
-  name: string;
-  slug: string;
-  logo?: string;
-  coverImage?: string;
-  shortDescription: string;
-  fullDescription?: string;
-  website?: string;
-  stats?: { establishedYear?: number; totalProjects?: number };
-  highlights?: string[];
-  amenities?: string[];
-  certifications?: string[];
-  images?: string[];
-  socialLinks?: {
-    facebook?: string;
-    instagram?: string;
-    linkedin?: string;
-    twitter?: string;
-  };
-  seo?: { metaTitle?: string; metaDescription?: string; keywords?: string[] };
-  isFeatured: boolean;
-  isActive: boolean;
-  priority?: number;
-  projects?: {
-    _id: string;
-    title: string;
-    slug: string;
-    coverImage?: string;
-    location?: string;
-  }[];
-  faqs?: { question: string; answer: string }[];
-  brochure?: string;
-  createdAt: string;
-}
-
-interface Property {
-  _id: string;
-  propertyName: string;
-  slug: string;
-  listingType: "buy" | "rent";
-  propertyType: string;
-  price: number;
-  bedroom: number;
-  bathroom: number;
-  sizeSqft: string;
-  address: string;
-  developerName: string;
-  status: boolean;
-}
 
 interface DeveloperFormState {
   name: string;
@@ -119,7 +71,7 @@ const fmt = (n?: number) => (n !== undefined ? n.toLocaleString() : "—");
 const fetchDevelopers = () =>
   api.get("/api/developers?limit=100").then((r) => r.data.data as Developer[]);
 const fetchProperties = () =>
-  api.get("/api/properties?limit=100").then((r) => r.data.data as Property[]);
+  api.get("/api/property?limit=100").then((r) => r.data.data as Property[]);
 const fetchDeveloperStats = () =>
   api.get("/api/developers/stats/overview").then((r) => r.data.data);
 
