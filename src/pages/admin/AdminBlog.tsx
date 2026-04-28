@@ -58,7 +58,9 @@ const AdminBlog = () => {
       return;
 
     try {
-      const res = await fetch(`${API_BASE}/${slug}`, { method: "DELETE" });
+      const res = await fetch(`${BASE_URL}/api/blogs/${slug}`, {
+        method: "DELETE",
+      });
       const json = await res.json();
       if (res.ok) {
         alert(json.msg || "Deleted successfully");
