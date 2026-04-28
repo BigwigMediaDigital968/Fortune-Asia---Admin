@@ -2,6 +2,7 @@ import { Edit, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import AddBlog from "../../components/AddBlogs";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../../lib/api";
 
 interface BlogPost {
   _id: string;
@@ -15,8 +16,6 @@ interface BlogPost {
   tags?: string;
 }
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL + "/api/blogs";
-
 const AdminBlog = () => {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
@@ -27,7 +26,7 @@ const AdminBlog = () => {
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/viewblog`);
+      const res = await fetch(`${BASE_URL}/api/blogs`);
       const json = await res.json();
 
       const blogsArray: BlogPost[] = Array.isArray(json)
@@ -41,7 +40,7 @@ const AdminBlog = () => {
       });
 
       setBlogs(sortedBlogs);
-      console.log(blogs)
+      console.log(blogs);
     } catch (error) {
       console.error("Failed to fetch blogs", error);
       setBlogs([]);
