@@ -265,7 +265,6 @@ const PropertyManagement = () => {
         !form.propertyType ||
         !form.address ||
         !form.propertyDetails ||
-        !form.price ||
         !form.developer
       ) {
         toast.error("Please fill all required fields");
@@ -289,7 +288,7 @@ const PropertyManagement = () => {
       formData.append("propertyDetails", form.propertyDetails);
 
       /* NUMBERS */
-      formData.append("price", form.price);
+      formData.append("price", form.price??"0");
       formData.append("bedroom", String(form.bedroom));
       formData.append("bathroom", String(form.bathroom));
       formData.append("sizeSqft", String(form.sizeSqft));
@@ -654,6 +653,7 @@ const PropertyManagement = () => {
                   <option value="Villa">Villa</option>
                   <option value="Plot">Plot</option>
                   <option value="FarmHouse">FarmHouse</option>
+                  <option value="Penthouse">Penthouse</option>
                 </select>
 
                 {/* SLUG */}
