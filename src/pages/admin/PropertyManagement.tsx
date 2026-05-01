@@ -290,9 +290,9 @@ const PropertyManagement = () => {
 
       /* NUMBERS */
       formData.append("price", form.price);
-      formData.append("bedroom", String(Number(form.bedroom)));
-      formData.append("bathroom", String(Number(form.bathroom)));
-      formData.append("sizeSqft", String(Number(form.sizeSqft)));
+      formData.append("bedroom", String(form.bedroom));
+      formData.append("bathroom", String(form.bathroom));
+      formData.append("sizeSqft", String(form.sizeSqft));
 
       /* OPTIONAL TEXT FIELDS */
       if (form.highlights) formData.append("highlights", form.highlights);
@@ -681,13 +681,13 @@ const PropertyManagement = () => {
                   }
                 >
                   <option value="buy">Buy</option>
-                  {/* <option value="sell">Sell</option> */}
+                  <option value="sell">Sell</option>
                   <option value="rent">Rent</option>
                   {/* <option value="offPlan">Off Plan</option> */}
                 </select>
 
                 <input
-                  type="number"
+                  type="text"
                   placeholder="Bedrooms"
                   className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
                   value={form.bedroom}
@@ -697,7 +697,7 @@ const PropertyManagement = () => {
                 />
 
                 <input
-                  type="number"
+                  type="text"
                   placeholder="Bathrooms"
                   className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
                   value={form.bathroom}
@@ -707,7 +707,7 @@ const PropertyManagement = () => {
                 />
 
                 <input
-                  type="number"
+                  type="text"
                   placeholder="Price"
                   className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
                   value={form.price}
@@ -715,7 +715,7 @@ const PropertyManagement = () => {
                 />
 
                 <input
-                  type="string"
+                  type="text"
                   placeholder="Size (sqft)"
                   className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
                   value={form.sizeSqft}
@@ -725,7 +725,7 @@ const PropertyManagement = () => {
                 />
 
                 <input
-                  type="string"
+                  type="text"
                   placeholder="Area"
                   className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
                   value={form.subArea}
@@ -735,7 +735,7 @@ const PropertyManagement = () => {
                 />
 
                 <input
-                  type="string"
+                  type="text"
                   placeholder="Address"
                   className="bg-gray-800 border border-gray-700 rounded px-3 py-2"
                   value={form.address}
