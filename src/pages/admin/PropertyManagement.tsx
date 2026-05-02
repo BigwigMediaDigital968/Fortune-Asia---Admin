@@ -179,6 +179,7 @@ const PropertyManagement = () => {
   });
 
   console.log(properties);
+  console.log(isLoading);
 
   /* ================= IMAGE HANDLING ================= */
 

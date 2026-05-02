@@ -260,12 +260,12 @@ export default function DeveloperManagement() {
     onError: () => toast.error("Delete failed"),
   });
 
-  const toggleFeaturedMutation = useMutation({
-    mutationFn: (id: string) =>
-      api.patch(`/api/developers/${id}/toggle-featured`),
-    onSuccess: () => invalidate(),
-    onError: () => toast.error("Failed"),
-  });
+  // const toggleFeaturedMutation = useMutation({
+  //   mutationFn: (id: string) =>
+  //     api.patch(`/api/developers/${id}/toggle-featured`),
+  //   onSuccess: () => invalidate(),
+  //   onError: () => toast.error("Failed"),
+  // });
 
   const toggleActiveMutation = useMutation({
     mutationFn: (id: string) =>
@@ -1619,6 +1619,7 @@ const InfoRow = ({
 }) => (
   <div className="flex justify-between items-center text-sm">
     <span className="text-white/40">{label}</span>
+    <span className="hidden">{mono}</span>
     {isMissing ? (
       <span className="text-rose-400/60 italic text-xs underline decoration-dotted">
         Not Provided
@@ -1638,7 +1639,7 @@ const InfoRow = ({
   </div>
 );
 
-function Badge({ label, active }: { label: string; active: boolean }) {
+export function Badge({ label, active }: { label: string; active: boolean }) {
   return (
     <span
       className={`text-xs px-2 py-1 rounded-full font-medium ${active ? "bg-emerald-900/50 text-emerald-400 border border-emerald-700/30" : "bg-white/5 text-white/30 border border-white/10"}`}

@@ -1,6 +1,5 @@
 import React, { useRef, useMemo } from 'react';
 import JoditEditor from 'jodit-react';
-import axios from 'axios';
 import { BASE_URL } from '../../lib/api';
 
 interface RichTextEditorProps {
@@ -10,29 +9,6 @@ interface RichTextEditorProps {
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
   const editor = useRef<any | null>(null);
-
-  // Custom image upload handler
-  const uploadImage = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append('image', file);
-
-    try {
-      const response = await axios.post('/api/upload/image', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.data.success) {
-        return response.data.url;
-      } else {
-        throw new Error(response.data.error || 'Upload failed');
-      }
-    } catch (error) {
-      console.error('Upload error:', error);
-      throw error;
-    }
-  };
 
   const config = useMemo(() => {
     return {

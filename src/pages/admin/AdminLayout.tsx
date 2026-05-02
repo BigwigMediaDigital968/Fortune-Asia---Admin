@@ -4,16 +4,10 @@ import { useState } from "react";
 import logo from "../../assets/admin-logo.png";
 import { useNavigate } from "react-router-dom";
 import {
-  Bot,
-  Briefcase,
   Building2,
-  ClipboardList,
   Gauge,
-  Mail,
-  MailPlus,
   MessagesSquare,
   NotebookPen,
-  Users,
   LogOut,
   X,
   LandPlot,

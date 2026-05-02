@@ -3,6 +3,7 @@ import axios from "axios";
 import "../index.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { BASE_URL } from "../lib/api";
 
 const NewsletterForm = () => {
   const [loading, setLoading] = useState(false);
@@ -56,7 +57,7 @@ const NewsletterForm = () => {
 
     try {
       await axios.post(
-        `${API_BASE_URL}/send-newsletter`,
+        `${BASE_URL}/api/send-newsletter`,
         payload
       );
 

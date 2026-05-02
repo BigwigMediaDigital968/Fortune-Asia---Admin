@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { api } from "../../lib/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Employee } from "./AdminLeadManagement";
 import toast from "react-hot-toast";
 import { fetchEmployees } from "../../lib/leads";
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+//const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 export interface Listing {
   _id: string;
@@ -20,7 +20,7 @@ export interface Listing {
   source?: string;
 
   // assignment
-  assignedTo?: string | Employee | null;
+  assignedTo?: Employee | null;
 
   // status
   status:
@@ -54,6 +54,7 @@ const AdminListings = () => {
     queryKey: ["listings"],
     queryFn: fetchListings,
   });
+  console.error("fetch listings error", error);
 
   const { data: employees = [] } = useQuery({
     queryKey: ["employees"],
@@ -62,19 +63,19 @@ const AdminListings = () => {
   console.log("employees", employees)
   console.log("listings", listings)
 
-  const updateListing = async (data: any) => {
-    await queryClient.cancelQueries({ queryKey: ["listings"] });
+  // const updateListing = async (data: any) => {
+  //   await queryClient.cancelQueries({ queryKey: ["listings"] });
 
-    const prev = queryClient.getQueryData(["listings"]);
+  //   const prev = queryClient.getQueryData(["listings"]);
 
-    queryClient.setQueryData(["listings"], (old: any[]) =>
-      old?.map((l) =>
-        l._id === data.id ? { ...l, status: data.status } : l
-      )
-    );
+  //   queryClient.setQueryData(["listings"], (old: any[]) =>
+  //     old?.map((l) =>
+  //       l._id === data.id ? { ...l, status: data.status } : l
+  //     )
+  //   );
 
-    return { prev };
-  }
+  //   return { prev };
+  // }
 
 
 
@@ -366,7 +367,7 @@ const AdminListings = () => {
                         <div>
                           <p className="text-gray-500">Assigned To</p>
                           <p className="text-white">
-                            {modal.listing.assignedTo?.name || "-"}
+                            {modal.listing?.assignedTo?.name || "-"}
                           </p>
                         </div>
 

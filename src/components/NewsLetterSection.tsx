@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL + "/api";
+
 const NewsSubscribeSection: React.FC = () => {
   const [email, setEmail] = useState("");
   const [popup, setPopup] = useState<{

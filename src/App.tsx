@@ -7,7 +7,6 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import { Landing } from "./pages/Landing";
 import NewsletterForm from "./pages/Newsletter";
 import Emailer from "./pages/Emailer";
 
@@ -36,9 +35,6 @@ import SEO from "./components/SEO";
 import NotFound from "./components/NotFound";
 import AdminLeadManagement from "./pages/admin/AdminLeadManagement";
 import {
-  useQuery,
-  useMutation,
-  useQueryClient,
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'

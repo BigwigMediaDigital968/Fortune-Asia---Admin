@@ -143,7 +143,7 @@ const AdminLeadManagement = () => {
 
             if (!res.ok) throw new Error("Status update failed");
 
-            const data = await res.json();
+            //const data = await res.json();
 
             fetchLeads();
             toast.success("Status updated successfully");
@@ -199,7 +199,7 @@ const AdminLeadManagement = () => {
 
             if (!res.ok) throw new Error("Add note failed");
 
-            const data = await res.json();
+            //const data = await res.json();
 
             fetchLeads();
             toast.success("Note added successfully");

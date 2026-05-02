@@ -135,7 +135,7 @@ const Developers = () => {
           ) : (
             <>
               <div className="space-y-8">
-                {developers.map((dev) => (
+                {developers.map((dev:any) => (
                   <div
                     key={dev._id}
                     className="flex flex-col md:flex-row gap-6 border border-neutral-700 rounded-xl p-6 bg-white dark:bg-black shadow hover:shadow-lg transition"
@@ -173,7 +173,7 @@ const Developers = () => {
                         {/* Highlights */}
                         {dev.highlights?.length > 0 && (
                           <ul className="mt-4 flex flex-wrap gap-2">
-                            {dev.highlights.slice(0, 5).map((item, i) => (
+                            {dev.highlights.slice(0, 5).map((item:any, i:number) => (
                               <li
                                 key={i}
                                 className="text-xs px-3 py-1 rounded-full border border-gray-400 dark:border-gray-600"
