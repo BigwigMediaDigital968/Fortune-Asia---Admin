@@ -31,7 +31,7 @@ const AdminLogin = () => {
         className="bg-[#111] p-8 rounded-md w-full max-w-sm border border-gray-700"
       >
         <h1 className="text-2xl font-bold mb-6 text-center">
-          Mondas Admin Portal
+          Admin Login
         </h1>
 
         <input
