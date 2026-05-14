@@ -164,21 +164,45 @@ const AdminLeadManagement = () => {
                 {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userId: modalInput }),
+                    body: JSON.stringify({ employeeId: modalInput }),
                 }
             );
 
-            if (!res.ok) throw new Error("Assign failed");
-
             const data = await res.json();
 
-            setLeads((prev) =>
-                prev.map((l) => (l._id === modal.lead?._id ? data.data : l))
-            );
+            if (!res.ok) {
+                const error: any = new Error(
+                    data.message || "Assign failed"
+                );
+
+                error.code = res.status;
+
+                throw error;
+            }
+
+            // setLeads((prev) =>
+            //     prev.map((l) =>
+            //         l._id === modal.lead?._id ? data.data : l
+            //     )
+            // );
+            fetchLeads();
+
             toast.success("Lead assigned successfully");
-        } catch (err) {
+        } catch (err: any) {
+            console.log(err.message);
+
+            if (err.code === 400) {
+                toast.error(err.message);
+                return;
+            }
+
+            if (err.code === 403) {
+                toast.error(err.message);
+                return;
+            }
+
             toast.error("Failed to assign lead");
-        } finally {
+        } finally{
             setModal({ type: null });
             setModalInput("");
         }

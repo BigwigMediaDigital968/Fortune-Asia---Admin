@@ -12,6 +12,7 @@ import {
   X,
   LandPlot,
   TowerControl,
+  Users,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -35,6 +36,7 @@ const AdminLayout = () => {
     { icon: <MessagesSquare />, label: "Leads", to: "/admin/leads" },
     { icon: <Building2 />, label: "Listing Requests", to: "/admin/listing" },
     { icon: <NotebookPen />, label: "Blogs", to: "/admin/blogs" },
+    { icon: <Users />, label: "Employees", to: "/admin/employees" },
     // { icon: <Briefcase />, label: "Opportunity", to: "/admin/opportunity" },
 
     // { icon: <Mail />, label: "Newsletter", to: "/admin/newsletter" },
@@ -86,11 +88,10 @@ const AdminLayout = () => {
                 key={to}
                 to={to}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded ${
-                  location.pathname === to
+                className={`flex items-center gap-3 px-4 py-3 rounded ${location.pathname === to
                     ? "bg-[var(--primary-color)] text-black font-semibold"
                     : "hover:bg-[var(--primary-color)] hover:text-black"
-                }`}
+                  }`}
               >
                 {icon} {label}
               </Link>
@@ -217,11 +218,10 @@ const NavItem = ({
 }) => (
   <Link
     to={to}
-    className={`flex items-center gap-2 px-3 py-2 rounded whitespace-nowrap ${
-      active
+    className={`flex items-center gap-2 px-3 py-2 rounded whitespace-nowrap ${active
         ? "bg-[var(--primary-color)] text-black font-semibold"
         : "hover:bg-[var(--primary-color)] hover:text-black"
-    }`}
+      }`}
   >
     {icon} {label}
   </Link>

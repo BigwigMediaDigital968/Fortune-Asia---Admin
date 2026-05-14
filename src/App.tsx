@@ -38,6 +38,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
+import EmployeeManagement from "./pages/admin/EmployeeManagement";
 
 function AppWrapper() {
   const location = useLocation();
@@ -74,6 +75,7 @@ function AppWrapper() {
             <Route path="subscriber" element={<AdminSubscriber />} />
             <Route path="contacts" element={<AdminContactRequest />} />
             <Route path="leads" element={<AdminLeadManagement />} />
+            <Route path="employees" element={<EmployeeManagement />} />
             <Route path="request" element={<AdminNotify />} />
             <Route path="chatleads" element={<ChatbotLead />} />
             <Route path="sendnewsletter" element={<NewsletterForm />} />
