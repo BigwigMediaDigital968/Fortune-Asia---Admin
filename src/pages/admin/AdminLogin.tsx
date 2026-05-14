@@ -1,3 +1,4 @@
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +11,11 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,14 +49,27 @@ const AdminLogin = () => {
           required
         />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-4 px-3 py-2 bg-[#222] border border-gray-600 rounded"
-          required
-        />
+        <div className="relative w-full mb-4">
+      <input
+        type={showPassword ? "text" : "password"}
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="w-full px-3 py-2 bg-[#222] border border-gray-600 rounded pr-10 text-white"
+        required
+      />
+      <button
+        type="button"
+        onClick={togglePasswordVisibility}
+        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-200"
+      >
+        {showPassword ? (
+          <EyeOff size={20} />
+        ) : (
+          <Eye size={20} />
+        )}
+      </button>
+    </div>
 
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
