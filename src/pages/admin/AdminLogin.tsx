@@ -2,8 +2,8 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const ADMIN_USER = "admin@far.com";
-const ADMIN_PASS = "far@123";
+const ADMIN_USER = "admin@fortuneasia.ae";
+const ADMIN_PASS = "admin@123";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
